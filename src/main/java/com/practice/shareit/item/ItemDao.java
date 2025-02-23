@@ -20,13 +20,14 @@ public class ItemDao {
 
     public Item create(int userId, ItemDto itemDto) {
         int id = ++uniqueId;
-        Item item = new Item(id, itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable(), userDao.findById(userId));
+        Item item = new Item(id, itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable(), userDao.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден")));
         items.put(id, item);
         return item;
     }
 
     public Item update(int userId, int itemId, ItemDto itemDto) {
         Item oldItem = items.get(itemId);
+        // Условия лучше делать в сервисе
         if (userId != oldItem.getOwner().getId()) {
             throw new NotFoundException("У вас нет такой вещи");
         }
@@ -60,9 +61,9 @@ public class ItemDao {
     public List<Item> findByText(String text) {
         List<Item> similarItems = new ArrayList<>();
         for (Map.Entry<Integer, Item> entry : items.entrySet()) {
-            if ((StringUtils.containsIgnoreCase(entry.getValue().getName(), text) ||
-                    StringUtils.containsIgnoreCase(entry.getValue().getDescription(), text)) &&
-            entry.getValue().getAvailable()) {
+            if ((StringUtils.containsIgnoreCase(entry.getValue().getName(), text)
+                    || StringUtils.containsIgnoreCase(entry.getValue().getDescription(), text))
+                    && entry.getValue().getAvailable()) {
                 similarItems.add(entry.getValue());
             }
         }

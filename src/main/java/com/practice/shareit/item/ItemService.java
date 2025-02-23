@@ -16,11 +16,11 @@ public class ItemService {
     private final ItemDao itemDao;
 
     public Item create(int userId, ItemDto itemDto) {
-        if (userService.findById(userId) == null) {
+        if (userService.findById(userId) == null) { // userDao а не сервис
             throw new NotFoundException("Такой пользователь не существует");
         }
-        if (itemDto.getName() == null || itemDto.getDescription() == null || itemDto.getAvailable() == null
-                || itemDto.getName().isBlank() || itemDto.getDescription().isBlank()) {
+        if (itemDto.getName() == null || itemDto.getDescription() == null || itemDto.getAvailable() == null ||
+                itemDto.getName().isBlank() || itemDto.getDescription().isBlank()) {
             throw new ValidationException("Имя и описание не должны быть пустыми.");
         }
         return itemDao.create(userId, itemDto);

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class UserDao {
@@ -30,8 +31,8 @@ public class UserDao {
         return users.values().stream().toList();
     }
 
-    public User findById(int id) {
-        return users.get(id);
+    public Optional<User> findById(int id) {
+        return Optional.of(users.get(id));
     }
 
     public User update(User user, int userId) {

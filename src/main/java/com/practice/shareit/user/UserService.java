@@ -1,5 +1,6 @@
 package com.practice.shareit.user;
 
+import com.practice.shareit.exception.NotFoundException;
 import com.practice.shareit.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,10 +27,13 @@ public class UserService {
     }
 
     public User findById(int id) {
-        return userDao.findById(id);
+        return userDao.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
     public User update(User user, int userId) {
+        if (!user.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
+            throw new ValidationException("Неправильный формат эл. почты");
+        }
         return userDao.update(user, userId);
     }
 
