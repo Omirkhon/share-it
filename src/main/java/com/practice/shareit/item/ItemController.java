@@ -1,6 +1,5 @@
 package com.practice.shareit.item;
 
-import com.practice.shareit.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,28 +10,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final ItemMapper itemMapper;
     @PostMapping
-    public ItemDto create(@RequestBody Item item) {
-        return itemService.create(item);
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") int userId, @RequestBody ItemDto itemDto) {
+        return itemMapper.toDto(itemService.create(userId, itemDto));
     }
 
     @PatchMapping("{itemId}")
-    public ItemDto update(@PathVariable int itemId, @RequestBody Item item) {
-        return itemService.update(itemId, item);
+    public ItemDto update(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int itemId, @RequestBody ItemDto itemDto) {
+        return itemMapper.toDto(itemService.update(userId, itemId, itemDto));
     }
 
     @GetMapping("{itemId}")
     public ItemDto findById(@PathVariable int itemId) {
-        return itemService.findById(itemId);
+        return itemMapper.toDto(itemService.findById(itemId));
     }
 
     @GetMapping()
-    public List<ItemDto> findAllOwnItems(@RequestBody User owner) {
-        return itemService.findAllOwnItems(owner);
+    public List<ItemDto> findAllOwnItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+        return itemMapper.toDto(itemService.findAllOwnItems(userId));
     }
 
     @GetMapping("search")
     public List<ItemDto> findByText(@RequestParam String text) {
-        return itemService.findByText(text);
+        return itemMapper.toDto(itemService.findByText(text));
     }
 }
