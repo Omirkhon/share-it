@@ -1,43 +1,36 @@
 package com.practice.shareit.user;
 
-import com.practice.shareit.exception.NotFoundException;
-import com.practice.shareit.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserDao userDao;
+    private final UserMapper userMapper;
+    Map<Integer, User> users = new HashMap<>();
 
-    public User create(User user) {
-        if (user.getName().isBlank() || user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new ValidationException("Имя или Эл. Почта пустые.");
+    public UserDto create(User user) {
+        if (user.getName().isBlank() || user.getEmail().isBlank()) {
+            throw new RuntimeException();
         }
-        if (!user.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
-            throw new ValidationException("Неправильный формат эл. почты");
-        }
-        return userDao.create(user);
+        users.put(user.getId(), user);
+        return userMapper.toDto(user);
     }
 
-    public List<User> findAll() {
-        return userDao.findAll();
+    public List<UserDto> findAll() {
+        return userMapper.toDto(users.values().stream().toList());
     }
 
-    public User findById(int id) {
-        return userDao.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    public UserDto findById(int id) {
+        return userMapper.toDto(users.get(id));
     }
 
-    public User update(User user, int userId) {
-        if (!user.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
-            throw new ValidationException("Неправильный формат эл. почты");
-        }
-        return userDao.update(user, userId);
-    }
-
-    public void delete(int userId) {
-        userDao.delete(userId);
+    public UserDto update(int userId, User user) {
+        users.put(user.getId(), user);
+        return userMapper.toDto(user);
     }
 }
