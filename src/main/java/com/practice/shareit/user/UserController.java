@@ -1,5 +1,6 @@
 package com.practice.shareit.user;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,23 +11,30 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
+
     @PostMapping
-    public UserDto create(@RequestBody User user) {
-        return userService.create(user);
+    public UserDto create(@Valid @RequestBody UserDto userDto) {
+        return userService.create(userDto);
     }
 
     @GetMapping
     public List<UserDto> findAll() {
-        return userService.findAll();
+        return userMapper.toDto(userService.findAll());
     }
 
     @GetMapping("{id}")
     public UserDto findById(@PathVariable int id) {
-        return userService.findById(id);
+        return userMapper.toDto(userService.findById(id));
     }
 
-    @PatchMapping("{itemId}")
-    public UserDto update(@PathVariable int itemId, @RequestBody User user) {
-        return userService.update(itemId, user);
+    @PatchMapping("{userId}")
+    public UserDto update(@RequestBody User user, @PathVariable int userId) {
+        return userMapper.toDto(userService.update(user, userId));
+    }
+
+    @DeleteMapping("{userId}")
+    public void delete(@PathVariable int userId) {
+        userService.delete(userId);
     }
 }

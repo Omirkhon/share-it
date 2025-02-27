@@ -1,5 +1,6 @@
 package com.practice.shareit.user;
 
+import com.practice.shareit.exceptions.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,26 +12,32 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserService {
     private final UserMapper userMapper;
+    private final UserDao userDao;
     Map<Integer, User> users = new HashMap<>();
 
-    public UserDto create(User user) {
-        if (user.getName().isBlank() || user.getEmail().isBlank()) {
-            throw new RuntimeException();
+    public UserDto create(UserDto user) {
+        if (user.getName().isBlank() || user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new ValidationException("Имя или Эл. Почта пустые.");
         }
-        users.put(user.getId(), user);
-        return userMapper.toDto(user);
+        if (!user.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
+            throw new ValidationException("Неправильный формат эл. почты");
+        }
+        return userDao.create(user);
     }
 
-    public List<UserDto> findAll() {
-        return userMapper.toDto(users.values().stream().toList());
+    public List<User> findAll() {
+        return userDao.findAll();
     }
 
-    public UserDto findById(int id) {
-        return userMapper.toDto(users.get(id));
+    public User findById(int id) {
+        return userDao.findById(id);
     }
 
-    public UserDto update(int userId, User user) {
-        users.put(user.getId(), user);
-        return userMapper.toDto(user);
+    public User update(User user, int userId) {
+        return userDao.update(user, userId);
+    }
+
+    public void delete(int userId) {
+        userDao.delete(userId);
     }
 }
