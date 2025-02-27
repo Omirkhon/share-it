@@ -1,6 +1,9 @@
 package com.practice.shareit.item;
 
+import com.practice.shareit.exceptions.NotFoundException;
+import com.practice.shareit.exceptions.ValidationException;
 import com.practice.shareit.user.User;
+import com.practice.shareit.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,41 +17,32 @@ import java.util.Map;
 public class ItemService {
     private final ItemMapper itemMapper;
     private final Map<Integer, Item> items = new HashMap<>();
+    private final UserService userService;
+    private final ItemDao itemDao;
 
-    public ItemDto create(Item item) {
-        items.put(item.getId(), item);
-        return itemMapper.toDto(item);
-    }
-
-    public ItemDto update(int itemId, Item item) {
-        if (itemId != item.getId()) {
-            throw new RuntimeException();
+    public Item create(int userId, ItemDto itemDto) {
+        if (userService.findById(userId) == null) {
+            throw new NotFoundException("Такой пользователь не существует");
         }
-        items.put(item.getId(), item);
-        return itemMapper.toDto(item);
+        return itemDao.create(userId, itemDto);
     }
 
-    public ItemDto findById(int itemId) {
-        return itemMapper.toDto(items.get(itemId));
+    public Item update(int userId, int itemId, ItemDto itemDto) {
+        return itemDao.update(userId, itemId, itemDto);
     }
 
-    public List<ItemDto> findAllOwnItems(User owner) { // не owner, а userId
-        List<Item> ownItems = new ArrayList<>();
-        for (Map.Entry<Integer, Item> entry : items.entrySet()) {
-            if (entry.getValue().getOwner() == owner) {
-                ownItems.add(entry.getValue());
-            }
+    public Item findById(int itemId) {
+        return itemDao.findById(itemId);
+    }
+
+    public List<Item> findAllOwnItems(int userId) {
+        return itemDao.findAllOwnItems(userId);
+    }
+
+    public List<Item> findByText(String text) {
+        if (text == null || text.isBlank()) {
+            return new ArrayList<>();
         }
-        return itemMapper.toDto(ownItems);
-    }
-
-    public List<ItemDto> findByText(String text) {
-        List<Item> similarItems = new ArrayList<>();
-        for (Map.Entry<Integer, Item> entry : items.entrySet()) {
-            if (entry.getValue().getName().contains(text) || entry.getValue().getDescription().contains(text)) {
-                similarItems.add(entry.getValue());
-            }
-        }
-        return itemMapper.toDto(similarItems);
+        return itemDao.findByText(text);
     }
 }
