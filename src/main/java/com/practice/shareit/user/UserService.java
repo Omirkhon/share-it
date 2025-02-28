@@ -1,43 +1,55 @@
 package com.practice.shareit.user;
 
-import com.practice.shareit.exceptions.ValidationException;
+import com.practice.shareit.exceptions.AuthorisationException;
+import com.practice.shareit.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserMapper userMapper;
-    private final UserDao userDao;
-    Map<Integer, User> users = new HashMap<>();
+    private final UserRepository userRepository;
 
-    public UserDto create(UserDto user) {
-        if (user.getName().isBlank() || user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new ValidationException("Имя или Эл. Почта пустые.");
+    public User create(UserDto userDto) {
+        if (userRepository.findUserByEmail(userDto.getEmail()) != null) {
+            throw new AuthorisationException("Пользователь с такой эл. почтой уже существует");
         }
-        if (!user.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
-            throw new ValidationException("Неправильный формат эл. почты");
-        }
-        return userDao.create(user);
+        User user = new User();
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        return userRepository.save(user);
     }
 
     public List<User> findAll() {
-        return userDao.findAll();
+        return userRepository.findAll();
     }
 
     public User findById(int id) {
-        return userDao.findById(id);
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
     public User update(User user, int userId) {
-        return userDao.update(user, userId);
+        User oldUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        if (oldUser.getEmail().equals(user.getEmail())) {
+            if (user.getName() != null) {
+                oldUser.setName(user.getName());
+            }
+        } else if (userRepository.findUserByEmail(user.getEmail()) != null) {
+            throw new AuthorisationException("Пользователь с такой эл. почтой уже существует");
+        } else {
+            if (user.getName() != null) {
+                oldUser.setName(user.getName());
+            }
+            if (user.getEmail() != null) {
+                oldUser.setEmail(user.getEmail());
+            }
+        }
+        return userRepository.save(oldUser);
     }
 
     public void delete(int userId) {
-        userDao.delete(userId);
+        userRepository.deleteById(userId);
     }
 }

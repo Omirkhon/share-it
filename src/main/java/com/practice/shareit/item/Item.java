@@ -1,6 +1,7 @@
 package com.practice.shareit.item;
 
 import com.practice.shareit.user.User;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -12,8 +13,11 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@Entity
+@Table(name = "items")
 public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     @NotBlank(message = "Название не может быть пустым")
     String name;
@@ -21,5 +25,7 @@ public class Item {
     String description;
     @NotNull(message = "Статус наличия не указан")
     Boolean available;
+    @ManyToOne
+    @JoinColumn(name="user_id")
     User owner;
 }

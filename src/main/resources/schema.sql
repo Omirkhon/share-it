@@ -1,10 +1,10 @@
-CREATE TABLE users (
+CREATE TABLE IF EXISTS users (
                        id serial primary key,
                        name varchar(50) not null,
                        email varchar(255) not null
 );
 
-CREATE TABLE items (
+CREATE TABLE IF EXISTS items (
                        id serial primary key,
                        name varchar(50) not null,
                        description varchar(255) not null,
@@ -12,7 +12,7 @@ CREATE TABLE items (
                        owner_id int references users (id) not null
 );
 
-CREATE TABLE bookings (
+CREATE TABLE IF EXISTS bookings (
                           id serial primary key,
                           start_date timestamp without time zone not null,
                           end_date timestamp without time zone not null,
@@ -21,7 +21,7 @@ CREATE TABLE bookings (
                           status varchar(10) not null
 );
 
-CREATE TABLE comments (
+CREATE TABLE IF EXISTS comments (
                           id serial primary key,
                           text varchar(255) not null,
                           item_id int references items (id) not null,
