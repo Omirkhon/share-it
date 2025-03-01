@@ -1,5 +1,6 @@
 package com.practice.shareit.item;
 
+import com.practice.shareit.utils.RequestConstants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,12 @@ public class ItemController {
     private final ItemMapper itemMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") int userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader(RequestConstants.HEADER) int userId, @Valid @RequestBody ItemDto itemDto) {
         return itemMapper.toDto(itemService.create(userId, itemDto));
     }
 
     @PatchMapping("{itemId}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int itemId, @RequestBody ItemDto itemDto) {
+    public ItemDto update(@RequestHeader(RequestConstants.HEADER) int userId, @PathVariable int itemId, @RequestBody ItemDto itemDto) {
         return itemMapper.toDto(itemService.update(userId, itemId, itemDto));
     }
 
@@ -29,7 +30,7 @@ public class ItemController {
     }
 
     @GetMapping()
-    public List<ItemDto> findAllOwnItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemDto> findAllOwnItems(@RequestHeader(RequestConstants.HEADER) int userId) {
         return itemMapper.toDto(itemService.findAllOwnItems(userId));
     }
 
