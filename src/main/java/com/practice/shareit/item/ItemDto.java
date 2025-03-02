@@ -1,9 +1,16 @@
 package com.practice.shareit.item;
 
+import com.practice.shareit.comment.CommentReadDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class ItemDto {
     int id;
@@ -13,4 +20,5 @@ public class ItemDto {
     String description;
     @NotNull(message = "Статус наличия не указан")
     Boolean available;
+    final List<CommentReadDto> comments = new ArrayList<>();
 }

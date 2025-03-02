@@ -1,21 +1,29 @@
 package com.practice.shareit.user;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import com.practice.shareit.booking.Booking;
+import com.practice.shareit.comment.Comment;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-    @NotBlank(message = "Имя не может быть пустым")
     String name;
-    @Email (message = "Некорректный формат эл. почты")
     String email;
+    @OneToMany(mappedBy = "booker")
+    final List<Booking> bookings = new ArrayList<>();
+    @OneToMany(mappedBy = "author")
+    final List<Comment> comments = new ArrayList<>();
 }

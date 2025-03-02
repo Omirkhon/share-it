@@ -1,9 +1,8 @@
-package com.practice.shareit.comment;
+package com.practice.shareit.booking;
 
 import com.practice.shareit.item.Item;
 import com.practice.shareit.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,20 +12,23 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "comments")
-public class Comment {
+@Entity
+@Table(name = "bookings")
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-    @NotNull
-    String text;
+    @Column(name = "start_date")
+    LocalDateTime startDate;
+    @Column(name = "end_date")
+    LocalDateTime endDate;
     @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;
     @ManyToOne
-    @JoinColumn(name = "author_id")
-    User author;
-    final LocalDateTime created = LocalDateTime.now();
+    @JoinColumn(name = "booker_id")
+    User booker;
+    @Enumerated
+    Status status;
 }
