@@ -2,7 +2,6 @@ package com.practice.shareit.booking;
 
 import com.practice.shareit.item.Item;
 import com.practice.shareit.user.User;
-import com.practice.shareit.utils.Status;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

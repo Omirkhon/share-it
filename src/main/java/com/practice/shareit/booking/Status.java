@@ -1,4 +1,4 @@
-package com.practice.shareit.utils;
+package com.practice.shareit.booking;
 
 public enum Status {
     WAITING,

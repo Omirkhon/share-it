@@ -1,6 +1,7 @@
 package com.practice.shareit.booking;
 
 import com.practice.shareit.utils.RequestConstants;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,13 +15,15 @@ public class BookingController {
     private final BookingMapper bookingMapper;
 
     @PostMapping
-    public Booking create(@RequestHeader(RequestConstants.HEADER) int userId, BookingCreateDto bookingCreateDto) {
-        return bookingService.create(userId, bookingCreateDto);
+    public BookingReadDto create(@RequestHeader(RequestConstants.HEADER) int userId, @RequestBody @Valid BookingCreateDto bookingCreateDto) {
+        return bookingMapper.toDto(bookingService.create(userId, bookingCreateDto));
     }
 
     @PatchMapping("/{bookingId}")
-    public Booking updateStatus(@PathVariable int bookingId, @RequestBody Boolean approved) {
-        return bookingService.updateStatus(bookingId, approved);
+    public BookingReadDto updateStatus(@RequestHeader(RequestConstants.HEADER) int userId,
+                                       @PathVariable int bookingId,
+                                       @RequestParam Boolean approved) {
+        return bookingMapper.toDto(bookingService.updateStatus(userId, bookingId, approved));
     }
 
     @GetMapping("/{bookingId}")
@@ -29,12 +32,14 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingReadDto> findAllByCurrentUser(@RequestHeader(RequestConstants.HEADER) int userId, @RequestBody String state) {
+    public List<BookingReadDto> findAllByCurrentUser(@RequestHeader(RequestConstants.HEADER) int userId,
+                                                     @RequestParam(required = false) String state) {
         return bookingMapper.toDto(bookingService.findAllByCurrentUser(userId, state));
     }
 
     @GetMapping("/owner")
-    public List<BookingReadDto> findAllByCurrentUserItems(@RequestHeader(RequestConstants.HEADER) int userId, @RequestBody String state) {
-        return bookingMapper.toDto(bookingService.findAllByCurrentUserItems(userId, state));
+    public List<BookingReadDto> findAllByOwner(@RequestHeader(RequestConstants.HEADER) int userId,
+                                                          @RequestParam(required = false) String state) {
+        return bookingMapper.toDto(bookingService.findAllByOwner(userId, state));
     }
 }

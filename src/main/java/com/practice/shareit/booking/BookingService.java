@@ -1,10 +1,12 @@
 package com.practice.shareit.booking;
 
+import com.practice.shareit.exceptions.AuthorisationException;
 import com.practice.shareit.exceptions.NotFoundException;
+import com.practice.shareit.exceptions.ValidationException;
+import com.practice.shareit.item.Item;
 import com.practice.shareit.item.ItemRepository;
 import com.practice.shareit.user.User;
 import com.practice.shareit.user.UserRepository;
-import com.practice.shareit.utils.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +25,27 @@ public class BookingService {
         User booker = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Booking booking = new Booking();
         booking.setStatus(Status.WAITING);
-        booking.setId(bookingCreateDto.getId());
-        booking.setStartDate(bookingCreateDto.getStartDate());
-        booking.setEndDate(bookingCreateDto.getEndDate());
-        booking.setItem(bookingCreateDto.getItem());
+        booking.setStartDate(bookingCreateDto.getStart());
+        booking.setEndDate(bookingCreateDto.getEnd());
+        if (booking.getStartDate().isAfter(booking.getEndDate())) {
+            throw new ValidationException("Некорректно указано время");
+        }
+        Item item = itemRepository.findById(bookingCreateDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
+        if (!item.getAvailable()) {
+            throw new ValidationException("Вещь не доступна");
+        }
+        booking.setItem(item);
         booking.setBooker(booker);
         return bookingRepository.save(booking);
     }
 
-    public Booking updateStatus(int bookingId, Boolean approved) {
+    public Booking updateStatus(int ownerId, int bookingId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронь не найдена."));
+        if (ownerId != booking.getItem().getOwner().getId()) {
+            throw new ValidationException("Вы не можете подтверждать данную бронь");
+        }
+
+        userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         if (approved) {
             booking.setStatus(Status.APPROVED);
@@ -54,33 +67,43 @@ public class BookingService {
             return bookings;
         }
 
-        List<Booking> filteredBookings = new ArrayList<>();
-        if (state.equals("PAST")) {
-            bookings.stream()
-                    .filter(booking -> booking.getEndDate().isBefore(LocalDateTime.now()))
-                    .forEach(filteredBookings::add);
-        } else if (state.equals("CURRENT")) {
-            bookings.stream()
-                    .filter(booking -> booking.getStartDate().isBefore(LocalDateTime.now()) && booking.getEndDate().isAfter(LocalDateTime.now()))
-                    .forEach(filteredBookings::add);
-        } else if (state.equals("FUTURE")) {
-            bookings.stream()
-                    .filter(booking -> booking.getStartDate().isAfter(LocalDateTime.now()))
-                    .forEach(filteredBookings::add);
-        } else if (state.equals("WAITING")) {
-            bookings.stream()
-                    .filter(booking -> booking.getStatus() == Status.WAITING)
-                    .forEach(filteredBookings::add);
-        } else if (state.equals("REJECTED")) {
-            bookings.stream()
-                    .filter(booking -> booking.getStatus() == Status.REJECTED)
-                    .forEach(filteredBookings::add);
-        }
-
-        return filteredBookings;
+        return filterBookings(bookings, state);
     }
 
-    public List<Booking> findAllByCurrentUserItems(int userId, String state) {
-        return null;
+    public List<Booking> findAllByOwner(int userId, String state) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден."));
+        List<Booking> bookings = bookingRepository.findAllByItemOwner(user);
+        if (bookings.isEmpty()) {
+            throw new NotFoundException("У данного пользователя нет бронирований.");
+        }
+        return filterBookings(bookings, state);
+    }
+
+    public List<Booking> filterBookings(List<Booking> bookings, String state) {
+        List<Booking> filteredBookings = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        switch (state) {
+            case "PAST" ->
+                    bookings.stream()
+                            .filter(booking -> booking.getEndDate().isBefore(now))
+                            .forEach(filteredBookings::add);
+            case "CURRENT" ->
+                    bookings.stream()
+                            .filter(booking -> booking.getStartDate().isBefore(now) && booking.getEndDate().isAfter(now))
+                            .forEach(filteredBookings::add);
+            case "FUTURE" ->
+                    bookings.stream()
+                            .filter(booking -> booking.getStartDate().isAfter(now))
+                            .forEach(filteredBookings::add);
+            case "WAITING" ->
+                    bookings.stream()
+                            .filter(booking -> booking.getStatus() == Status.WAITING)
+                            .forEach(filteredBookings::add);
+            case "REJECTED" ->
+                    bookings.stream()
+                            .filter(booking -> booking.getStatus() == Status.REJECTED)
+                            .forEach(filteredBookings::add);
+        }
+        return filteredBookings;
     }
 }

@@ -1,20 +1,27 @@
 package com.practice.shareit.booking;
 
-import com.practice.shareit.item.Item;
-import com.practice.shareit.user.User;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingCreateDto {
-    int id;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
-    Item item;
-    User booker;
+    @NotNull
+    @FutureOrPresent
+    LocalDateTime start;
+    @NotNull
+    @Future
+    LocalDateTime end;
+    @NotNull
+    Integer itemId;
 }
