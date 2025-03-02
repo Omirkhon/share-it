@@ -13,6 +13,7 @@ import com.practice.shareit.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,9 +72,12 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        Booking booking = bookingRepository.findBookingByBookerAndItem(user, item).orElseThrow(() -> new ValidationException(""));
+        Booking booking = bookingRepository.findByBookerAndItem(user, item)
+                .stream()
+                .findFirst()
+                .orElseThrow(()-> new ValidationException("Вы не брали данную вещь в аренду"));
 
-        if (!booking.getStatus().equals(Status.APPROVED)) {
+        if (!booking.getStatus().equals(Status.APPROVED) || !booking.getStartDate().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Вы не брали данную вещь в аренду.");
         }
 
