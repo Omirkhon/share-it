@@ -1,5 +1,7 @@
 package com.practice.shareit.item;
 
+import com.practice.shareit.booking.Booking;
+import com.practice.shareit.comment.Comment;
 import com.practice.shareit.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +10,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,14 +23,15 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-    @NotBlank(message = "Название не может быть пустым")
     String name;
-    @NotBlank(message = "Описание не может быть пустым")
     String description;
     @Column(name = "is_available")
-    @NotNull(message = "Статус наличия не указан")
     Boolean available;
     @ManyToOne
     @JoinColumn(name="owner_id")
     User owner;
+    @OneToMany(mappedBy = "item")
+    final List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "item")
+    final List<Booking> bookings = new ArrayList<>();
 }
