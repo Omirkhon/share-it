@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS items (
                        name varchar(50) not null,
                        description varchar(255) not null,
                        is_available boolean not null ,
-                       owner_id int references users (id) not null
+                       owner_id int references users (id) not null,
+                       request_id int references requests (id)
 );
 
 CREATE TABLE IF NOT EXISTS bookings (
@@ -35,4 +36,11 @@ CREATE TABLE IF NOT EXISTS comments (
                           item_id int references items (id) not null,
                           author_id int references users (id) not null,
                           created timestamp without time zone not null
+);
+
+CREATE TABLE IF NOT EXISTS requests (
+                            id serial primary key,
+                            description varchar(255) not null,
+                            requester_id int references users (id),
+                            created timestamp without time zone not null
 );

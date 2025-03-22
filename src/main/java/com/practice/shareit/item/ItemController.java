@@ -1,6 +1,5 @@
 package com.practice.shareit.item;
 
-import com.practice.shareit.comment.Comment;
 import com.practice.shareit.comment.CommentCreateDto;
 import com.practice.shareit.comment.CommentMapper;
 import com.practice.shareit.comment.CommentReadDto;

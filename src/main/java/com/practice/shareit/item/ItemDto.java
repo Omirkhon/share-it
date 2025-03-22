@@ -21,4 +21,5 @@ public class ItemDto {
     @NotNull(message = "Статус наличия не указан")
     Boolean available;
     final List<CommentReadDto> comments = new ArrayList<>();
+    Integer requestId;
 }
