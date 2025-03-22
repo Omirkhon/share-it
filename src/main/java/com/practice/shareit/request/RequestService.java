@@ -2,15 +2,13 @@ package com.practice.shareit.request;
 
 import com.practice.shareit.exceptions.NotFoundException;
 import com.practice.shareit.user.UserRepository;
-import com.practice.shareit.utils.RequestConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +21,7 @@ public class RequestService {
         Request request = new Request();
         request.setDescription(requestCreateDto.getDescription());
         request.setRequester(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден")));
+        request.setCreated(LocalDateTime.now());
         return requestRepository.save(request);
     }
 
@@ -35,9 +34,9 @@ public class RequestService {
         return requestRepository.findById(id).orElseThrow(() -> new NotFoundException("Запрос не найден"));
     }
 
-    public List<Request> findByPageAndSize(@RequestHeader(RequestConstants.HEADER) int userId, @RequestParam int page, @RequestParam int size) {
+    public List<Request> findByPageAndSize(int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(from/size, size);
         Page<Request> pageResult = requestRepository.findAll(pageable);
         return pageResult.getContent();
     }

@@ -19,8 +19,8 @@ public class ItemController {
     private final CommentMapper commentMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader(RequestConstants.HEADER) int userId, @Valid @RequestBody ItemDto itemDto) {
-        return itemMapper.toDto(itemService.create(userId, itemDto));
+    public ItemDto create(@RequestHeader(RequestConstants.HEADER) int userId, @Valid @RequestBody ItemCreateDto itemCreateDto) {
+        return itemMapper.toDto(itemService.create(userId, itemCreateDto));
     }
 
     @PatchMapping("{itemId}")

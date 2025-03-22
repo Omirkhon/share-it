@@ -1,12 +1,10 @@
 package com.practice.shareit.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Data
 public class RequestCreateDto {
+    @NotBlank(message = "Описание не может быть пустым")
     String description;
 }

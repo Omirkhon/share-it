@@ -8,6 +8,7 @@ import com.practice.shareit.comment.CommentCreateDto;
 import com.practice.shareit.comment.CommentRepository;
 import com.practice.shareit.exceptions.NotFoundException;
 import com.practice.shareit.exceptions.ValidationException;
+import com.practice.shareit.request.RequestRepository;
 import com.practice.shareit.user.User;
 import com.practice.shareit.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +25,18 @@ public class ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final RequestRepository requestRepository;
 
-    public Item create(int userId, ItemDto itemDto) {
+    public Item create(int userId, ItemCreateDto itemCreateDto) {
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = new Item();
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable());
+        item.setName(itemCreateDto.getName());
+        item.setDescription(itemCreateDto.getDescription());
+        item.setAvailable(itemCreateDto.getAvailable());
+        if (itemCreateDto.getRequest_id() != null) {
+            item.setRequest(requestRepository.findById(itemCreateDto.getRequest_id())
+                    .orElseThrow(() -> new NotFoundException("Предмет не найден")));
+        }
         item.setOwner(owner);
         return itemRepository.save(item);
     }

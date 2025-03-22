@@ -1,7 +1,10 @@
 package com.practice.shareit.request;
 
 import com.practice.shareit.utils.RequestConstants;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/requests")
 @RequiredArgsConstructor
+@Validated
 public class RequestController {
     private final RequestService requestService;
     private final RequestMapper requestMapper;
@@ -29,7 +33,9 @@ public class RequestController {
     }
 
     @GetMapping("/all")
-    public List<RequestReadDto> findByPageAndSize(@RequestHeader(RequestConstants.HEADER) int userId, @RequestParam int page, @RequestParam int size) {
-        return requestMapper.toDto(requestService.findByPageAndSize(userId, page, size));
+    public List<RequestReadDto> findByPageAndSize(@RequestHeader(RequestConstants.HEADER) int userId,
+                                                  @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                  @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
+        return requestMapper.toDto(requestService.findByPageAndSize(userId, from, size));
     }
 }

@@ -27,5 +27,5 @@ public class Request {
     User requester;
     @OneToMany(mappedBy = "request")
     final List<Item> items = new ArrayList<>();
-    final LocalDateTime created = LocalDateTime.now();
+    LocalDateTime created;
 }

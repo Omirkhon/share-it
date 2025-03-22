@@ -20,7 +20,9 @@ public class ItemMapper {
         for (Comment comment : item.getComments()) {
             itemDto.getComments().add(commentMapper.toDto(comment));
         }
-
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
         return itemDto;
     }
 
