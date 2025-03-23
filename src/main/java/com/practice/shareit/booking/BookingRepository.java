@@ -2,14 +2,16 @@ package com.practice.shareit.booking;
 
 import com.practice.shareit.item.Item;
 import com.practice.shareit.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
-    List<Booking> findAllByBooker(User booker);
+    Page<Booking> findAllByBooker(User booker, Pageable pageable);
 
-    List<Booking> findAllByItemOwner(User itemOwner);
+    Page<Booking> findAllByItemOwner(User itemOwner, Pageable pageable);
 
     List<Booking> findByBookerAndItem(User booker, Item item);
 }

@@ -37,7 +37,7 @@ public class RequestService {
     public List<Request> findByPageAndSize(int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Pageable pageable = PageRequest.of(from/size, size);
-        Page<Request> pageResult = requestRepository.findAll(pageable);
+        Page<Request> pageResult = requestRepository.findAllWhereNotRequesterId(userId, pageable);
         return pageResult.getContent();
     }
 }

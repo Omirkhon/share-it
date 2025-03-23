@@ -8,6 +8,9 @@ import com.practice.shareit.item.ItemRepository;
 import com.practice.shareit.user.User;
 import com.practice.shareit.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -59,9 +62,11 @@ public class BookingService {
         return bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронь не найдена."));
     }
 
-    public List<Booking> findAllByCurrentUser(int userId, String state) {
+    public List<Booking> findAllByCurrentUser(int userId, String state, int from, int size) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        List<Booking> bookings = bookingRepository.findAllByBooker(user);
+        Pageable pageable = PageRequest.of(from/size, size);
+        Page<Booking> pageResult = bookingRepository.findAllByBooker(user, pageable);
+        List<Booking> bookings = pageResult.getContent();
 
         if (state == null) {
             return bookings;
@@ -70,9 +75,11 @@ public class BookingService {
         return filterBookings(bookings, state);
     }
 
-    public List<Booking> findAllByOwner(int userId, String state) {
+    public List<Booking> findAllByOwner(int userId, String state, int from, int size) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден."));
-        List<Booking> bookings = bookingRepository.findAllByItemOwner(user);
+        Pageable pageable = PageRequest.of(from/size, size);
+        Page<Booking> pageResult = bookingRepository.findAllByItemOwner(user, pageable);
+        List<Booking> bookings = pageResult.getContent();
         if (bookings.isEmpty()) {
             throw new NotFoundException("У данного пользователя нет бронирований.");
         }

@@ -5,7 +5,10 @@ import com.practice.shareit.comment.CommentMapper;
 import com.practice.shareit.comment.CommentReadDto;
 import com.practice.shareit.utils.RequestConstants;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
@@ -34,13 +38,17 @@ public class ItemController {
     }
 
     @GetMapping()
-    public List<ItemDto> findAllOwnItems(@RequestHeader(RequestConstants.HEADER) int userId) {
-        return itemMapper.toDto(itemService.findAllOwnItems(userId));
+    public List<ItemDto> findAllOwnItems(@RequestHeader(RequestConstants.HEADER) int userId,
+                                         @RequestParam(defaultValue = "0") @Min(0) int from,
+                                         @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
+        return itemMapper.toDto(itemService.findAllOwnItems(userId, from, size));
     }
 
     @GetMapping("search")
-    public List<ItemDto> findByText(@RequestParam String text) {
-        return itemMapper.toDto(itemService.findByText(text));
+    public List<ItemDto> findByText(@RequestParam String text,
+                                    @RequestParam(defaultValue = "0") @Min(0) int from,
+                                    @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
+        return itemMapper.toDto(itemService.findByText(text, from, size));
     }
 
     @PostMapping("{itemId}/comment")

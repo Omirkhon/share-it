@@ -1,11 +1,14 @@
 package com.practice.shareit.item;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemCreateDto {
     String name;
     String description;
     Boolean available;
-    Integer request_id;
+    Integer requestId;
 }

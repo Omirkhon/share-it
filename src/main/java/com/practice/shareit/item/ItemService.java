@@ -8,10 +8,14 @@ import com.practice.shareit.comment.CommentCreateDto;
 import com.practice.shareit.comment.CommentRepository;
 import com.practice.shareit.exceptions.NotFoundException;
 import com.practice.shareit.exceptions.ValidationException;
+import com.practice.shareit.request.Request;
 import com.practice.shareit.request.RequestRepository;
 import com.practice.shareit.user.User;
 import com.practice.shareit.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,9 +37,9 @@ public class ItemService {
         item.setName(itemCreateDto.getName());
         item.setDescription(itemCreateDto.getDescription());
         item.setAvailable(itemCreateDto.getAvailable());
-        if (itemCreateDto.getRequest_id() != null) {
-            item.setRequest(requestRepository.findById(itemCreateDto.getRequest_id())
-                    .orElseThrow(() -> new NotFoundException("Предмет не найден")));
+        if (itemCreateDto.getRequestId() != null) {
+            item.setRequest(requestRepository.findById(itemCreateDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос не найден")));
         }
         item.setOwner(owner);
         return itemRepository.save(item);
@@ -62,16 +66,20 @@ public class ItemService {
         return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена."));
     }
 
-    public List<Item> findAllOwnItems(int userId) {
+    public List<Item> findAllOwnItems(int userId, int from, int size) {
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        return itemRepository.findAllByOwner(owner);
+        Pageable pageable = PageRequest.of(from/size, size);
+        Page<Item> pageResult = itemRepository.findAllByOwner(owner, pageable);
+        return pageResult.getContent();
     }
 
-    public List<Item> findByText(String text) {
+    public List<Item> findByText(String text, int from, int size) {
         if (text == null || text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemRepository.search(text);
+        Pageable pageable = PageRequest.of(from/size, size);
+        Page<Item> pageResult = itemRepository.search(text, pageable);
+        return pageResult.getContent();
     }
 
     public Comment createComment(int userId, int itemId, CommentCreateDto commentCreateDto) {
