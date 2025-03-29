@@ -1,8 +1,6 @@
-package com.practice.shareit.service;
+package com.practice.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.practice.shareit.item.ItemCreateDto;
-import com.practice.shareit.item.ItemService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

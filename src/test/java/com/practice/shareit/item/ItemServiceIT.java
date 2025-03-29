@@ -1,8 +1,5 @@
-package com.practice.shareit.service;
+package com.practice.shareit.item;
 
-import com.practice.shareit.item.Item;
-import com.practice.shareit.item.ItemCreateDto;
-import com.practice.shareit.item.ItemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

@@ -30,7 +30,7 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
-    public User update(User user, int userId) {
+    public User update(UserDto user, int userId) {
         User oldUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (oldUser.getEmail().equals(user.getEmail())) {
             if (user.getName() != null) {
