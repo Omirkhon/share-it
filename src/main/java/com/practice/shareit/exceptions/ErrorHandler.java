@@ -15,7 +15,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleBadRequest(final AuthorisationException e) {
+    public ErrorResponse handleBadRequest(final ConflictException e) {
         return new ErrorResponse(e.getMessage());
     }
 

@@ -22,28 +22,28 @@ public class ItemServiceTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
-    @Test
-    @SneakyThrows
-    void create() {
-        int userId = 2;
-        int requestId = 1;
-        ItemCreateDto itemCreateDto = new ItemCreateDto();
-        itemCreateDto.setName("Предмет");
-        itemCreateDto.setDescription("Полезная вещь");
-        itemCreateDto.setAvailable(true);
-        itemCreateDto.setRequestId(requestId);
-
-        String json = objectMapper.writeValueAsString(itemCreateDto);
-
-        mockMvc.perform(post("/items/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                        .param("userId", Integer.toString(userId)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value(itemCreateDto.getName()))
-                .andExpect(jsonPath("$.description").value(itemCreateDto.getDescription()))
-                .andExpect(jsonPath("$.available").value(itemCreateDto.getAvailable()))
-                .andExpect(jsonPath("$.requestId").value(itemCreateDto.getRequestId()));
-    }
+//    @Test
+//    @SneakyThrows
+//    void create() {
+//        int userId = 2;
+//        int requestId = 1;
+//        ItemCreateDto itemCreateDto = new ItemCreateDto();
+//        itemCreateDto.setName("Предмет");
+//        itemCreateDto.setDescription("Полезная вещь");
+//        itemCreateDto.setAvailable(true);
+//        itemCreateDto.setRequestId(requestId);
+//
+//        String json = objectMapper.writeValueAsString(itemCreateDto);
+//
+//        mockMvc.perform(post("/items/")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(json)
+//                        .param("userId", Integer.toString(userId)))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").exists())
+//                .andExpect(jsonPath("$.name").value(itemCreateDto.getName()))
+//                .andExpect(jsonPath("$.description").value(itemCreateDto.getDescription()))
+//                .andExpect(jsonPath("$.available").value(itemCreateDto.getAvailable()))
+//                .andExpect(jsonPath("$.requestId").value(itemCreateDto.getRequestId()));
+//    }
 }

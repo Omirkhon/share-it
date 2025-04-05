@@ -1,6 +1,4 @@
 package com.practice.shareit.booking;
-
-import com.practice.shareit.exceptions.AuthorisationException;
 import com.practice.shareit.exceptions.NotFoundException;
 import com.practice.shareit.exceptions.ValidationException;
 import com.practice.shareit.item.Item;

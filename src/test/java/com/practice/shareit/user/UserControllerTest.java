@@ -12,11 +12,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class UserControllerTest {
     @MockitoBean
-    UserRepository userRepository;
+    UserService userService;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -40,7 +41,7 @@ public class UserControllerTest {
 
         String json = objectMapper.writeValueAsString(user);
 
-        when(userRepository.save(Mockito.any()))
+        when(userService.create(Mockito.any()))
                 .thenReturn(user);
 
         mockMvc.perform(post("/users")
@@ -65,7 +66,7 @@ public class UserControllerTest {
         user2.setName("Горилла");
         user2.setEmail("gorilla@gmail.com");
 
-        when(userRepository.findAll())
+        when(userService.findAll())
                 .thenReturn(List.of(user, user2));
 
         mockMvc.perform(get("/users"))
@@ -86,13 +87,42 @@ public class UserControllerTest {
         user.setName("Шымпанзе");
         user.setEmail("chimp@gmail.com");
 
-        when(userRepository.findById(Mockito.anyInt()))
-                .thenReturn(Optional.of(user));
+        when(userService.findById(Mockito.anyInt()))
+                .thenReturn(user);
 
         mockMvc.perform(get("/users/" + user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Шымпанзе"))
                 .andExpect(jsonPath("$.email").value("chimp@gmail.com"));
+    }
+
+    @Test
+    @SneakyThrows
+    void delete_epicSuccess() {
+        User user = new User();
+        user.setName("Пользователь");
+        user.setEmail("user@gmail.com");
+
+        mockMvc.perform(delete("/users/" + user.getId()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void update() {
+        User user = new User();
+        user.setName("Пользователь");
+        user.setEmail("user@gmail.com");
+
+        String json = objectMapper.writeValueAsString(user);
+
+        when(userService.update(Mockito.any(), Mockito.anyInt()))
+                .thenReturn(user);
+
+        mockMvc.perform(patch("/users/" + user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk());
     }
 }

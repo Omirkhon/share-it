@@ -1,14 +1,13 @@
 package com.practice.shareit.user;
 
-import com.practice.shareit.exceptions.AuthorisationException;
+import com.practice.shareit.exceptions.ConflictException;
 import com.practice.shareit.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -30,7 +29,7 @@ public class UserServiceIT {
 
         userService.create(user);
 
-        AuthorisationException exception = assertThrows(AuthorisationException.class, () -> userService.create(user2));
+        ConflictException exception = assertThrows(ConflictException.class, () -> userService.create(user2));
         assertEquals(message, exception.getMessage());
     }
 
@@ -43,7 +42,7 @@ public class UserServiceIT {
         User user = userService.create(userDto);
 
         UserDto updatedUser = new UserDto();
-        userDto.setName("Горилла");
+        updatedUser.setName("Горилла");
 
         User result = userService.update(updatedUser, user.getId());
 
@@ -60,7 +59,7 @@ public class UserServiceIT {
         User user = userService.create(userDto);
 
         UserDto updatedUser = new UserDto();
-        userDto.setEmail("monkey@gmail.com");
+        updatedUser.setEmail("monkey@gmail.com");
 
         User result = userService.update(updatedUser, user.getId());
 
@@ -81,7 +80,7 @@ public class UserServiceIT {
 
     @Test
     void update_epicFail_emailExists() {
-        String message = "Пользователь с такой эл.почтой уже существует";
+        String message = "Пользователь с такой эл. почтой уже существует";
 
         UserDto userDto = new UserDto();
         userDto.setName("Бабуин");
@@ -89,16 +88,34 @@ public class UserServiceIT {
 
         User user = userService.create(userDto);
 
-        UserDto updatedUser = new UserDto();
-        userDto.setEmail("Nicola_Champlin4@yahoo.com");
+        UserDto userDto2 = new UserDto();
+        userDto2.setName("Горилла");
+        userDto2.setEmail("Gorilla@gmail.com");
 
-        AuthorisationException exception = assertThrows(AuthorisationException.class, () -> userService.update(updatedUser, user.getId()));
+        userService.create(userDto2);
+
+        UserDto updatedUser = new UserDto();
+        updatedUser.setEmail("Gorilla@gmail.com");
+
+        ConflictException exception = assertThrows(ConflictException.class, () -> userService.update(updatedUser, user.getId()));
 
         assertEquals(message, exception.getMessage());
     }
 
     @Test
-    void delete() {
+    void deleteTest() {
+        String message = "Пользователь не найден";
 
+        UserDto userDto = new UserDto();
+        userDto.setName("Vasily");
+        userDto.setEmail("vasya123@gmail.com");
+
+        User user = userService.create(userDto);
+        int id = user.getId();
+        userService.delete(id);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> userService.findById(id));
+
+        assertEquals(message, exception.getMessage());
     }
 }
