@@ -15,10 +15,4 @@ public class CommentMapper {
 
         return commentReadDto;
     }
-
-    public List<CommentReadDto> toDto(List<Comment> comments) {
-        return comments.stream()
-                .map(this::toDto)
-                .toList();
-    }
 }

@@ -110,11 +110,6 @@ public class UserServiceTest {
     }
 
     @Test
-    void delete_test() {
-
-    }
-
-    @Test
     void updateName_epicSuccess() {
         User user = new User();
         user.setName("Бабуин");

@@ -1,62 +1,95 @@
 package com.practice.shareit.item;
 
+import com.practice.shareit.user.User;
+import com.practice.shareit.user.UserDto;
+import com.practice.shareit.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 public class ItemServiceIT {
     @Autowired
     ItemService itemService;
+    @Autowired
+    UserService userService;
 
     @Test
-    void findAllOwnItems_success() {
-        int userId = 1;
-        int expectedItemId = 1;
+    void updateName() {
+        UserDto userDto = new UserDto();
+        userDto.setName("Бабуин");
+        userDto.setEmail("monkey@gmail.com");
 
-        List<Item> items = itemService.findAllOwnItems(userId, 0, 5);
-        Item item = items.get(0);
+        User user = userService.create(userDto);
 
-        assertEquals(expectedItemId, item.getId());
-    }
-
-    @Test
-    void findAllOwnItems_wrongUserId() {
-        int userId = 10000;
-        String message = "Пользователь не найден";
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> itemService.findAllOwnItems(userId, 0, 5));
-
-        assertEquals(message, exception.getMessage());
-    }
-
-    @Test
-    void create_wrongUserId() {
-        int userId = 10000;
-        String message = "Пользователь не найден";
         ItemCreateDto itemCreateDto = new ItemCreateDto();
+        itemCreateDto.setName("Предмет");
+        itemCreateDto.setAvailable(true);
+        itemCreateDto.setDescription("Описание");
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> itemService.create(userId, itemCreateDto));
+        Item item = itemService.create(user.getId(), itemCreateDto);
 
-        assertEquals(message, exception.getMessage());
+        ItemDto newItem = new ItemDto();
+        newItem.setName("Новое название");
+
+        Item result = itemService.update(user.getId(), item.getId(), newItem);
+
+        assertEquals(newItem.getName(), result.getName());
+        assertEquals(itemCreateDto.getDescription(), result.getDescription());
+        assertEquals(itemCreateDto.getAvailable(), result.getAvailable());
     }
 
     @Test
-    void create_wrongRequestId() {
-        int userId = 1;
-        int requestId = 10000;
-        String message = "Запрос не найден";
+    void updateDescription() {
+        UserDto userDto = new UserDto();
+        userDto.setName("Бабуин");
+        userDto.setEmail("a@gmail.com");
+
+        User user = userService.create(userDto);
+
         ItemCreateDto itemCreateDto = new ItemCreateDto();
-        itemCreateDto.setRequestId(requestId);
+        itemCreateDto.setName("Предмет");
+        itemCreateDto.setAvailable(true);
+        itemCreateDto.setDescription("Описание");
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> itemService.create(userId, itemCreateDto));
+        Item item = itemService.create(user.getId(), itemCreateDto);
 
-        assertEquals(message, exception.getMessage());
+        ItemDto newItem = new ItemDto();
+        newItem.setDescription("Новое описание");
+
+        Item result = itemService.update(user.getId(), item.getId(), newItem);
+
+        assertEquals(newItem.getDescription(), result.getDescription());
+        assertEquals(itemCreateDto.getName(), result.getName());
+        assertEquals(itemCreateDto.getAvailable(), result.getAvailable());
+    }
+
+    @Test
+    void updateAvailable() {
+        UserDto userDto = new UserDto();
+        userDto.setName("Бабуин");
+        userDto.setEmail("b@gmail.com");
+
+        User user = userService.create(userDto);
+
+        ItemCreateDto itemCreateDto = new ItemCreateDto();
+        itemCreateDto.setName("Предмет");
+        itemCreateDto.setAvailable(true);
+        itemCreateDto.setDescription("Описание");
+
+        Item item = itemService.create(user.getId(), itemCreateDto);
+
+        ItemDto newItem = new ItemDto();
+        newItem.setAvailable(false);
+
+        Item result = itemService.update(user.getId(), item.getId(), newItem);
+
+        assertEquals(newItem.getAvailable(), result.getAvailable());
+        assertEquals(itemCreateDto.getDescription(), result.getDescription());
+        assertEquals(itemCreateDto.getName(), result.getName());
     }
 }
