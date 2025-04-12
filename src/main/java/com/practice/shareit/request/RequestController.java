@@ -18,22 +18,22 @@ public class RequestController {
     private final RequestMapper requestMapper;
 
     @PostMapping
-    public RequestReadDto create(@RequestHeader(RequestConstants.HEADER) int userId, @RequestBody RequestCreateDto requestCreateDto) {
+    public RequestReadDto create(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @RequestBody RequestCreateDto requestCreateDto) {
         return requestMapper.toDto(requestService.create(userId, requestCreateDto));
     }
 
     @GetMapping
-    public List<RequestReadDto> findAllByUser(@RequestHeader(RequestConstants.HEADER) int userId) {
+    public List<RequestReadDto> findAllByUser(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId) {
         return requestMapper.toDto(requestService.findAllByUser(userId));
     }
 
     @GetMapping("{id}")
-    public RequestReadDto findById(@RequestHeader(RequestConstants.HEADER) int userId, @PathVariable int id) {
+    public RequestReadDto findById(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @PathVariable int id) {
         return requestMapper.toDto(requestService.findById(userId, id));
     }
 
     @GetMapping("/all")
-    public List<RequestReadDto> findByPageAndSize(@RequestHeader(RequestConstants.HEADER) int userId,
+    public List<RequestReadDto> findByPageAndSize(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
                                                   @RequestParam(defaultValue = "0") @Min(0) int from,
                                                   @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
         return requestMapper.toDto(requestService.findByPageAndSize(userId, from, size));

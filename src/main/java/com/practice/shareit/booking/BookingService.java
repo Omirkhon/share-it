@@ -108,6 +108,10 @@ public class BookingService {
                     bookings.stream()
                             .filter(booking -> booking.getStatus() == Status.REJECTED)
                             .forEach(filteredBookings::add);
+            default ->
+            {
+                return bookings;
+            }
         }
         return filteredBookings;
     }

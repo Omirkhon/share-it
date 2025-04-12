@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.shareit.comment.CommentMapper;
 import com.practice.shareit.item.ItemMapper;
 import com.practice.shareit.user.User;
-import com.practice.shareit.user.UserMapper;
 import com.practice.shareit.utils.RequestConstants;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@WebMvcTest({RequestController.class, UserMapper.class, CommentMapper.class, ItemMapper.class, RequestMapper.class, RequestService.class, RequestRepository.class})
+@WebMvcTest({RequestController.class, CommentMapper.class, ItemMapper.class, RequestMapper.class})
 @AutoConfigureMockMvc
 public class RequestControllerTest {
     @MockitoBean
@@ -55,7 +54,7 @@ public class RequestControllerTest {
         mockMvc.perform(post("/requests")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
-                .header(RequestConstants.HEADER, user.getId()))
+                .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(request.getId()))
                 .andExpect(jsonPath("$.created").exists())
@@ -80,7 +79,7 @@ public class RequestControllerTest {
                 .thenReturn(request);
 
         mockMvc.perform(get("/requests/" + request.getId())
-                        .header(RequestConstants.HEADER, user.getId()))
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(request.getId()))
                 .andExpect(jsonPath("$.created").exists())
@@ -111,7 +110,7 @@ public class RequestControllerTest {
                 .thenReturn(List.of(request, request2));
 
         mockMvc.perform(get("/requests")
-                        .header(RequestConstants.HEADER, user.getId()))
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].created").exists())
@@ -145,7 +144,7 @@ public class RequestControllerTest {
                 .thenReturn(List.of(request, request2));
 
         mockMvc.perform(get("/requests/all")
-                        .header(RequestConstants.HEADER, user.getId()))
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].created").exists())

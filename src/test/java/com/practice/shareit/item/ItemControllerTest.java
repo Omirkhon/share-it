@@ -56,7 +56,7 @@ public class ItemControllerTest {
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
-                        .header(RequestConstants.HEADER, user.getId()))
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1000))
                 .andExpect(jsonPath("$.name").value("Предмет"))
@@ -108,7 +108,7 @@ public class ItemControllerTest {
         mockMvc.perform(patch("/items/" + item.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
-                        .header(RequestConstants.HEADER, user.getId()))
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk());
     }
 
@@ -139,7 +139,7 @@ public class ItemControllerTest {
         mockMvc.perform(post("/items/" + item.getId() + "/comment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
-                        .header(RequestConstants.HEADER, user.getId()))
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.text").value("Комментарий"));
@@ -171,7 +171,7 @@ public class ItemControllerTest {
                 .thenReturn(List.of(item, item2));
 
         mockMvc.perform(get("/items")
-                        .header(RequestConstants.HEADER, user.getId()))
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("Предмет"))

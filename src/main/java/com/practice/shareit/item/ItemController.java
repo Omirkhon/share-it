@@ -23,12 +23,12 @@ public class ItemController {
     private final CommentMapper commentMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader(RequestConstants.HEADER) int userId, @Valid @RequestBody ItemCreateDto itemCreateDto) {
+    public ItemDto create(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @Valid @RequestBody ItemCreateDto itemCreateDto) {
         return itemMapper.toDto(itemService.create(userId, itemCreateDto));
     }
 
     @PatchMapping("{itemId}")
-    public ItemDto update(@RequestHeader(RequestConstants.HEADER) int userId, @PathVariable int itemId, @RequestBody ItemDto itemDto) {
+    public ItemDto update(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @PathVariable int itemId, @RequestBody ItemDto itemDto) {
         return itemMapper.toDto(itemService.update(userId, itemId, itemDto));
     }
 
@@ -38,7 +38,7 @@ public class ItemController {
     }
 
     @GetMapping()
-    public List<ItemDto> findAllOwnItems(@RequestHeader(RequestConstants.HEADER) int userId,
+    public List<ItemDto> findAllOwnItems(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
                                          @RequestParam(defaultValue = "0") @Min(0) int from,
                                          @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
         return itemMapper.toDto(itemService.findAllOwnItems(userId, from, size));
@@ -52,7 +52,7 @@ public class ItemController {
     }
 
     @PostMapping("{itemId}/comment")
-    public CommentReadDto createComment(@RequestHeader(RequestConstants.HEADER) int userId,
+    public CommentReadDto createComment(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
                                         @PathVariable int itemId,
                                         @RequestBody CommentCreateDto commentCreateDto) {
         return commentMapper.toDto(itemService.createComment(userId, itemId, commentCreateDto));

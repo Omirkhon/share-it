@@ -17,12 +17,12 @@ public class BookingController {
     private final BookingMapper bookingMapper;
 
     @PostMapping
-    public BookingReadDto create(@RequestHeader(RequestConstants.HEADER) int userId, @RequestBody @Valid BookingCreateDto bookingCreateDto) {
+    public BookingReadDto create(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @RequestBody @Valid BookingCreateDto bookingCreateDto) {
         return bookingMapper.toDto(bookingService.create(userId, bookingCreateDto));
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingReadDto updateStatus(@RequestHeader(RequestConstants.HEADER) int userId,
+    public BookingReadDto updateStatus(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
                                        @PathVariable int bookingId,
                                        @RequestParam Boolean approved) {
         return bookingMapper.toDto(bookingService.updateStatus(userId, bookingId, approved));
@@ -34,7 +34,7 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingReadDto> findAllByCurrentUser(@RequestHeader(RequestConstants.HEADER) int userId,
+    public List<BookingReadDto> findAllByCurrentUser(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
                                                      @RequestParam(required = false) String state,
                                                      @RequestParam(defaultValue = "0") @Min(0) int from,
                                                      @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
@@ -42,7 +42,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingReadDto> findAllByOwner(@RequestHeader(RequestConstants.HEADER) int userId,
+    public List<BookingReadDto> findAllByOwner(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
                                                @RequestParam(required = false) String state,
                                                @RequestParam(defaultValue = "0") @Min(0) int from,
                                                @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
