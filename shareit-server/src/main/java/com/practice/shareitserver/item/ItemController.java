@@ -4,7 +4,6 @@ import com.practice.shareitserver.comment.CommentCreateDto;
 import com.practice.shareitserver.comment.CommentMapper;
 import com.practice.shareitserver.comment.CommentReadDto;
 import com.practice.shareitserver.utils.RequestConstants;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class ItemController {
     private final CommentMapper commentMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @Valid @RequestBody ItemCreateDto itemCreateDto) {
+    public ItemDto create(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @RequestBody ItemCreateDto itemCreateDto) {
         return itemMapper.toDto(itemService.create(userId, itemCreateDto));
     }
 

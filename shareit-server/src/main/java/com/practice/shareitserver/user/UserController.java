@@ -1,6 +1,5 @@
 package com.practice.shareitserver.user;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto userDto) {
+    public UserDto create(@RequestBody UserDto userDto) {
         return userMapper.toDto(userService.create(userDto));
     }
 

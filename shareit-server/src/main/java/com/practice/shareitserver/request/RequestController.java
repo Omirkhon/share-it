@@ -4,7 +4,6 @@ import com.practice.shareitserver.utils.RequestConstants;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/requests")
 @RequiredArgsConstructor
-@Validated
 public class RequestController {
     private final RequestService requestService;
     private final RequestMapper requestMapper;
