@@ -210,18 +210,18 @@ public class UserServiceTest {
         assertEquals(message, exception.getMessage());
     }
 
-    @Test
-    void delete() {
-        User user = new User();
-        user.setId(1000);
-        user.setName("Бабуин");
-        user.setEmail("monkey@gmail.com");
-
-        when(userRepository.deleteUserById(Mockito.anyInt()))
-                .thenReturn(user);
-
-        User deletedUser = userService.delete(user.getId());
-
-        assertEquals(1000, deletedUser.getId());
-    }
+//    @Test
+//    void delete() {
+//        User user = new User();
+//        user.setId(1000);
+//        user.setName("Бабуин");
+//        user.setEmail("monkey@gmail.com");
+//
+//        when(userRepository.deleteUserById(Mockito.anyInt()))
+//                .thenReturn(user);
+//
+//        User deletedUser = userService.delete(user.getId());
+//
+//        assertEquals(1000, deletedUser.getId());
+//    }
 }

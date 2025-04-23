@@ -18,7 +18,7 @@ import java.util.Map;
 public class RequestClient {
     private final RestTemplate restTemplate;
 
-    public RequestClient(@Value("${posts.server.url}") String url,
+    public RequestClient(@Value("${shareit.server.url}") String url,
                       RestTemplateBuilder builder) {
         this.restTemplate = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(url))

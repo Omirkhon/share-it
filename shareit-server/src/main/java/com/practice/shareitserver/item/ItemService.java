@@ -31,7 +31,6 @@ public class ItemService {
     private final RequestRepository requestRepository;
 
     public Item create(int userId, ItemCreateDto itemCreateDto) {
-        User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = new Item();
         item.setName(itemCreateDto.getName());
         item.setDescription(itemCreateDto.getDescription());
@@ -40,6 +39,7 @@ public class ItemService {
             item.setRequest(requestRepository.findById(itemCreateDto.getRequestId())
                     .orElseThrow(() -> new NotFoundException("Запрос не найден")));
         }
+        User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         item.setOwner(owner);
         return itemRepository.save(item);
     }

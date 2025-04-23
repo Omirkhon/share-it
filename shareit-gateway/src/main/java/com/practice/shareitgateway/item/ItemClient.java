@@ -20,7 +20,7 @@ import java.util.Map;
 public class ItemClient {
     private final RestTemplate restTemplate;
 
-    public ItemClient(@Value("${posts.server.url}") String url,
+    public ItemClient(@Value("${shareit.server.url}") String url,
                       RestTemplateBuilder builder) {
         this.restTemplate = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(url))

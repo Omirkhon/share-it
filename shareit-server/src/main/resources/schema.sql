@@ -4,12 +4,14 @@ DROP TABLE IF EXISTS bookings;
 
 DROP TABLE IF EXISTS items;
 
+DROP TABLE IF EXISTS requests;
+
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE IF NOT EXISTS users (
                        id serial primary key,
                        name varchar(50) not null,
-                       email varchar(255) not null
+                       email varchar(255) not null unique
 );
 
 CREATE TABLE IF NOT EXISTS requests (

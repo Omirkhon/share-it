@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -19,7 +18,7 @@ import java.util.Map;
 public class BookingClient {
     private final RestTemplate restTemplate;
 
-    public BookingClient(@Value("${posts.server.url}") String url,
+    public BookingClient(@Value("${shareit.server.url}") String url,
                       RestTemplateBuilder builder) {
         this.restTemplate = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(url))

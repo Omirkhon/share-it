@@ -13,9 +13,6 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User create(UserDto userDto) {
-        if (userRepository.findUserByEmail(userDto.getEmail()) != null) {
-            throw new ConflictException("Пользователь с такой эл. почтой уже существует");
-        }
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
@@ -32,7 +29,8 @@ public class UserService {
 
     public User update(UserDto user, int userId) {
         User oldUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        if (userRepository.findUserByEmail(user.getEmail()) != null) {
+        User userByEmail = userRepository.findUserByEmail(user.getEmail());
+        if (userByEmail != null && userByEmail.getId() != userId) {
             throw new ConflictException("Пользователь с такой эл. почтой уже существует");
         }
         if (user.getName() != null) {
@@ -46,7 +44,7 @@ public class UserService {
         return userRepository.save(oldUser);
     }
 
-    public User delete(int userId) {
-        return userRepository.deleteUserById(userId);
+    public void delete(int userId) {
+        userRepository.deleteById(userId);
     }
 }

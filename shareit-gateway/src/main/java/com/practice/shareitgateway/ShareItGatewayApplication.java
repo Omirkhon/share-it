@@ -1,12 +1,12 @@
 package com.practice.shareitgateway;
 
-import com.practice.shareitserver.ShareItApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class ShareItGatewayApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ShareItApplication.class, args);
+        SpringApplication.run(ShareItGatewayApplication.class, args);
     }
 }
