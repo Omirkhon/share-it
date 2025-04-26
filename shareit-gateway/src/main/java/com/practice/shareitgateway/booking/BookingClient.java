@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -36,7 +37,7 @@ public class BookingClient {
         HttpHeaders headers = new HttpHeaders();
         headers.add(RequestConstants.USER_ID_HEADER, String.valueOf(userId));
         HttpEntity<Object> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange("/bookings/{bookingId}", HttpMethod.PATCH, entity,
+        return restTemplate.exchange("/bookings/{bookingId}?approved={approved}", HttpMethod.PATCH, entity,
                 Object.class,
                 Map.of("bookingId", bookingId, "approved", approved));
     }
@@ -50,10 +51,15 @@ public class BookingClient {
         HttpHeaders headers = new HttpHeaders();
         headers.add(RequestConstants.USER_ID_HEADER, String.valueOf(userId));
         HttpEntity<Object> entity = new HttpEntity<>(headers);
+        Map<String, Object> map = new HashMap<>();
+        map.put("state", state);
+        map.put("from", from);
+        map.put("size", size);
+
         return restTemplate.exchange("/bookings?state={state}&from={from}&size={size}", HttpMethod.GET,
                 entity,
                 Object.class,
-                Map.of("state", state, "from", from, "size", size));
+                map);
     }
 
     public ResponseEntity<Object> findAllByOwner(int userId, String state, int from, int size) {

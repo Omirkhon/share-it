@@ -28,7 +28,7 @@ public class BookingService {
         booking.setStatus(Status.WAITING);
         booking.setStartDate(bookingCreateDto.getStart());
         booking.setEndDate(bookingCreateDto.getEnd());
-        if (booking.getStartDate().isAfter(booking.getEndDate())) {
+        if (!booking.getStartDate().isBefore(booking.getEndDate())) {
             throw new ValidationException("Некорректно указано время");
         }
         Item item = itemRepository.findById(bookingCreateDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
@@ -81,12 +81,16 @@ public class BookingService {
         if (bookings.isEmpty()) {
             throw new NotFoundException("У данного пользователя нет бронирований.");
         }
+        if (state == null) {
+            return bookings;
+        }
         return filterBookings(bookings, state);
     }
 
     public List<Booking> filterBookings(List<Booking> bookings, String state) {
         List<Booking> filteredBookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
+
         switch (state) {
             case "PAST" ->
                     bookings.stream()

@@ -38,7 +38,7 @@ public class ItemClient {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(RequestConstants.USER_ID_HEADER, String.valueOf(userId));
         HttpEntity<ItemDto> entity = new HttpEntity<>(itemDto, httpHeaders);
-        return restTemplate.exchange("/items", HttpMethod.PATCH, entity, Object.class, Map.of("itemId", itemId));
+        return restTemplate.exchange("/items/{itemId}", HttpMethod.PATCH, entity, Object.class, Map.of("itemId", itemId));
     }
 
     public ResponseEntity<Object> findById(int itemId) {
