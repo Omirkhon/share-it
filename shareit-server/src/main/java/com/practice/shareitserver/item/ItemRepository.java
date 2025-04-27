@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-    Page<Item> findAllByOwner(User owner, Pageable pageable);
+    Page<Item> findAllByOwnerOrderById(User owner, Pageable pageable);
 
     @Query("select i from Item i " +
             "where (upper(i.name) like upper(concat('%', ?1, '%')) " +

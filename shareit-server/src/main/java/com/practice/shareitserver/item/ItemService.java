@@ -74,7 +74,7 @@ public class ItemService {
     public List<Item> findAllOwnItems(int userId, int from, int size) {
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Pageable pageable = PageRequest.of(from/size, size);
-        Page<Item> pageResult = itemRepository.findAllByOwner(owner, pageable);
+        Page<Item> pageResult = itemRepository.findAllByOwnerOrderById(owner, pageable);
         List<Item> items =  pageResult.getContent();
         for (Item item : items) {
             item.setLastBooking(bookingRepository.findFirstByItemIdAndStartDateIsBeforeOrderByEndDateDesc(item.getId(), LocalDateTime.now()).orElse(null));

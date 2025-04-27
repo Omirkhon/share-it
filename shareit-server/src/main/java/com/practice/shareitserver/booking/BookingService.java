@@ -76,20 +76,20 @@ public class BookingService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        BookingState state = BookingState.valueOf(stateStr);
+        BookingState state = BookingState.from(stateStr);
         switch (state) {
             case WAITING:
-                return bookingRepository.findByBookerAndStatusOrderByStartDate(user, BookingStatus.WAITING, pageable).getContent();
+                return bookingRepository.findByBookerAndStatusOrderByStartDateDesc(user, BookingStatus.WAITING, pageable).getContent();
             case REJECTED:
-                return bookingRepository.findByBookerAndStatusOrderByStartDate(user, BookingStatus.REJECTED, pageable).getContent();
+                return bookingRepository.findByBookerAndStatusOrderByStartDateDesc(user, BookingStatus.REJECTED, pageable).getContent();
             case PAST:
-                return bookingRepository.findByBookerAndStatusAndEndDateIsBefore(user, BookingStatus.APPROVED, now, pageable).getContent();
+                return bookingRepository.findByBookerAndStatusAndEndDateIsBeforeOrderByStartDateDesc(user, BookingStatus.APPROVED, now, pageable).getContent();
             case CURRENT:
-                return bookingRepository.findByBookerAndStatusAndStartDateIsBeforeAndEndDateIsAfter(user, BookingStatus.APPROVED, now, now, pageable).getContent();
+                return bookingRepository.findByBookerAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(user, now, now, pageable).getContent();
             case FUTURE:
-                return bookingRepository.findByBookerAndStatusAndStartDateIsAfter(user, BookingStatus.APPROVED, now, pageable).getContent();
+                return bookingRepository.findByBookerAndStartDateIsAfterOrderByStartDateDesc(user, now, pageable).getContent();
             default:
-                return bookingRepository.findAllByBookerOrderByStartDate(user, pageable).getContent();
+                return bookingRepository.findAllByBookerOrderByStartDateDesc(user, pageable).getContent();
         }
     }
 
@@ -99,20 +99,20 @@ public class BookingService {
         Pageable pageable = PageRequest.of(from / size, size);
         LocalDateTime now = LocalDateTime.now();
 
-        BookingState state = BookingState.valueOf(stateStr);
+        BookingState state = BookingState.from(stateStr);
         switch (state) {
             case WAITING:
-                return bookingRepository.findByItemOwnerAndStatusOrderByStartDate(user, BookingStatus.WAITING, pageable).getContent();
+                return bookingRepository.findByItemOwnerAndStatusOrderByStartDateDesc(user, BookingStatus.WAITING, pageable).getContent();
             case REJECTED:
-                return bookingRepository.findByItemOwnerAndStatusOrderByStartDate(user, BookingStatus.REJECTED, pageable).getContent();
+                return bookingRepository.findByItemOwnerAndStatusOrderByStartDateDesc(user, BookingStatus.REJECTED, pageable).getContent();
             case PAST:
-                return bookingRepository.findByItemOwnerAndStatusAndEndDateIsBefore(user, BookingStatus.APPROVED, now, pageable).getContent();
+                return bookingRepository.findByItemOwnerAndStatusAndEndDateIsBeforeOrderByStartDateDesc(user, BookingStatus.APPROVED, now, pageable).getContent();
             case CURRENT:
-                return bookingRepository.findByItemOwnerAndStatusAndStartDateIsBeforeAndEndDateIsAfter(user, BookingStatus.APPROVED, now, now, pageable).getContent();
+                return bookingRepository.findByItemOwnerAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(user, now, now, pageable).getContent();
             case FUTURE:
-                return bookingRepository.findByItemOwnerAndStatusAndStartDateIsAfter(user, BookingStatus.APPROVED, now, pageable).getContent();
+                return bookingRepository.findByItemOwnerAndStartDateIsAfterOrderByStartDateDesc(user, now, pageable).getContent();
             default:
-                return bookingRepository.findAllByItemOwnerOrderByStartDate(user, pageable).getContent();
+                return bookingRepository.findAllByItemOwnerOrderByStartDateDesc(user, pageable).getContent();
         }
     }
 

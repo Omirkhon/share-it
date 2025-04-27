@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -37,9 +38,7 @@ public class BookingController {
                                                      @RequestParam(defaultValue = "ALL") String state,
                                                      @RequestParam(defaultValue = "0") @Min(0) int from,
                                                      @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
-        List<BookingReadDto> dto = bookingMapper.toDto(bookingService.findAllByCurrentUser(userId, state, from, size));
-        System.out.println(dto);
-        return dto;
+        return bookingMapper.toDto(bookingService.findAllByCurrentUser(userId, state, from, size));
     }
 
     @GetMapping("/owner")

@@ -446,7 +446,7 @@ public class ItemServiceTest {
         when(userRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(user));
 
-        when(itemRepository.findAllByOwner(Mockito.any(), Mockito.any()))
+        when(itemRepository.findAllByOwnerOrderById(Mockito.any(), Mockito.any()))
                 .thenReturn(new PageImpl<>(List.of(item, item2)));
 
         List<Item> items = itemService.findAllOwnItems(user.getId(), 0, 5);
