@@ -1,6 +1,6 @@
 package com.practice.shareitserver.comment;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentCreateDto {
-    @NotNull
+    @NotBlank
     String text;
 }

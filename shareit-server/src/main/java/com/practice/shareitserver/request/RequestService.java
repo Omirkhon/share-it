@@ -26,6 +26,7 @@ public class RequestService {
     }
 
     public List<Request> findAllByUser(int userId) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         return requestRepository.findAllByRequesterId(userId);
     }
 

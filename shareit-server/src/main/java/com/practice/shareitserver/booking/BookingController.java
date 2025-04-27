@@ -28,21 +28,23 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingReadDto findById(@PathVariable int bookingId) {
-        return bookingMapper.toDto(bookingService.findById(bookingId));
+    public BookingReadDto findById(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @PathVariable int bookingId) {
+        return bookingMapper.toDto(bookingService.findById(userId, bookingId));
     }
 
     @GetMapping
     public List<BookingReadDto> findAllByCurrentUser(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
-                                                     @RequestParam(required = false) String state,
+                                                     @RequestParam(defaultValue = "ALL") String state,
                                                      @RequestParam(defaultValue = "0") @Min(0) int from,
                                                      @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
-        return bookingMapper.toDto(bookingService.findAllByCurrentUser(userId, state, from, size));
+        List<BookingReadDto> dto = bookingMapper.toDto(bookingService.findAllByCurrentUser(userId, state, from, size));
+        System.out.println(dto);
+        return dto;
     }
 
     @GetMapping("/owner")
     public List<BookingReadDto> findAllByOwner(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
-                                               @RequestParam(required = false) String state,
+                                               @RequestParam(defaultValue = "ALL") String state,
                                                @RequestParam(defaultValue = "0") @Min(0) int from,
                                                @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
         return bookingMapper.toDto(bookingService.findAllByOwner(userId, state, from, size));

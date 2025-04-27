@@ -45,7 +45,7 @@ public class BookingControllerIT {
 
         Booking booking = new Booking();
         booking.setId(1000);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -75,7 +75,7 @@ public class BookingControllerIT {
                         .param("approved", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.status").value(Status.REJECTED.toString()))
+                .andExpect(jsonPath("$.status").value(BookingStatus.REJECTED.toString()))
                 .andExpect(jsonPath("$.item.id").value(item.getId()));
     }
 }

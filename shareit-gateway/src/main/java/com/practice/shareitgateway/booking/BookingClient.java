@@ -42,8 +42,11 @@ public class BookingClient {
                 Map.of("bookingId", bookingId, "approved", approved));
     }
 
-    public ResponseEntity<Object> findById(int bookingId) {
-        return restTemplate.getForEntity("/bookings/{bookingId}", Object.class,
+    public ResponseEntity<Object> findById(int userId, int bookingId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(RequestConstants.USER_ID_HEADER, String.valueOf(userId));
+        HttpEntity<Object> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange("/bookings/{bookingId}", HttpMethod.GET, entity, Object.class,
                 Map.of("bookingId", bookingId));
     }
 

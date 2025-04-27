@@ -29,6 +29,6 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "booker_id")
     User booker;
-    @Enumerated
-    Status status;
+    @Enumerated(EnumType.STRING)
+    BookingStatus status;
 }

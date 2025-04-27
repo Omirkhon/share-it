@@ -41,8 +41,11 @@ public class ItemClient {
         return restTemplate.exchange("/items/{itemId}", HttpMethod.PATCH, entity, Object.class, Map.of("itemId", itemId));
     }
 
-    public ResponseEntity<Object> findById(int itemId) {
-        return restTemplate.getForEntity("/items/{itemId}",
+    public ResponseEntity<Object> findById(int userId, int itemId) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(RequestConstants.USER_ID_HEADER, String.valueOf(userId));
+        HttpEntity<Object> objectHttpEntity = new HttpEntity<>(httpHeaders);
+        return restTemplate.exchange("/items/{itemId}", HttpMethod.GET, objectHttpEntity,
                 Object.class,
                 Map.of("itemId", itemId)
         );

@@ -32,8 +32,8 @@ public class ItemController {
     }
 
     @GetMapping("{itemId}")
-    public ItemDto findById(@PathVariable int itemId) {
-        return itemMapper.toDto(itemService.findById(itemId));
+    public ItemDto findById(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @PathVariable int itemId) {
+        return itemMapper.toDto(itemService.findById(userId, itemId));
     }
 
     @GetMapping()

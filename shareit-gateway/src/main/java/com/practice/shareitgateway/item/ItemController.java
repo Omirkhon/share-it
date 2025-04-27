@@ -28,8 +28,8 @@ public class ItemController {
     }
 
     @GetMapping("{itemId}")
-    public ResponseEntity<Object> findById(@PathVariable int itemId) {
-        return itemClient.findById(itemId);
+    public ResponseEntity<Object> findById(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @PathVariable int itemId) {
+        return itemClient.findById(userId, itemId);
     }
 
     @GetMapping()
@@ -49,7 +49,7 @@ public class ItemController {
     @PostMapping("{itemId}/comment")
     public ResponseEntity<Object> createComment(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId,
                                         @PathVariable int itemId,
-                                        @RequestBody CommentCreateDto commentCreateDto) {
+                                        @RequestBody @Valid CommentCreateDto commentCreateDto) {
         return itemClient.createComment(userId, itemId, commentCreateDto);
     }
 }

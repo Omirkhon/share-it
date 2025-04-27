@@ -2,6 +2,7 @@ package com.practice.shareitgateway.request;
 
 import com.practice.shareitserver.request.RequestCreateDto;
 import com.practice.shareitserver.utils.RequestConstants;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class RequestController {
     private final RequestClient requestClient;
     @PostMapping
-    public ResponseEntity<Object> create(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @RequestBody RequestCreateDto requestCreateDto) {
+    public ResponseEntity<Object> create(@RequestHeader(RequestConstants.USER_ID_HEADER) int userId, @RequestBody @Valid RequestCreateDto requestCreateDto) {
         return requestClient.create(userId, requestCreateDto);
     }
 

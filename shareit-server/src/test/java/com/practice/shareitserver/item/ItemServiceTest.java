@@ -2,7 +2,7 @@ package com.practice.shareitserver.item;
 
 import com.practice.shareitserver.booking.Booking;
 import com.practice.shareitserver.booking.BookingRepository;
-import com.practice.shareitserver.booking.Status;
+import com.practice.shareitserver.booking.BookingStatus;
 import com.practice.shareitserver.comment.Comment;
 import com.practice.shareitserver.comment.CommentCreateDto;
 import com.practice.shareitserver.comment.CommentRepository;
@@ -181,7 +181,7 @@ public class ItemServiceTest {
         booking.setId(2);
         booking.setItem(item);
         booking.setBooker(user);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2020, 10, 20, 9, 0, 5));
 
         Comment comment = new Comment();
@@ -300,7 +300,7 @@ public class ItemServiceTest {
         booking.setId(2);
         booking.setItem(item);
         booking.setBooker(user);
-        booking.setStatus(Status.REJECTED);
+        booking.setStatus(BookingStatus.REJECTED);
         booking.setStartDate(LocalDateTime.of(2020, 10, 20, 9, 0, 5));
 
         when(itemRepository.findById(Mockito.anyInt()))
@@ -339,7 +339,7 @@ public class ItemServiceTest {
         booking.setId(2);
         booking.setItem(item);
         booking.setBooker(user);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2026, 10, 20, 9, 0, 5));
 
         when(itemRepository.findById(Mockito.anyInt()))

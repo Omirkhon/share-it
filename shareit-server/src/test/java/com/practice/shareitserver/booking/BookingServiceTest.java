@@ -47,7 +47,7 @@ public class BookingServiceTest {
         item.setName("Вещь");
 
         Booking booking = new Booking();
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -69,7 +69,7 @@ public class BookingServiceTest {
 
         Booking savedBooking = bookingService.create(user.getId(), bookingCreateDto);
 
-        assertEquals(Status.APPROVED.toString(), savedBooking.getStatus().toString());
+        assertEquals(BookingStatus.APPROVED.toString(), savedBooking.getStatus().toString());
         assertEquals(item.getId(), savedBooking.getItem().getId());
         assertEquals(booking.getStartDate().toString(), savedBooking.getStartDate().toString());
         assertEquals(booking.getEndDate().toString(), savedBooking.getEndDate().toString());
@@ -186,7 +186,7 @@ public class BookingServiceTest {
     void findById_epicSuccess() {
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
 
@@ -221,14 +221,14 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setBooker(user);
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.APPROVED);
+        booking2.setStatus(BookingStatus.APPROVED);
         booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking2.setBooker(user);
@@ -253,14 +253,14 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setBooker(user);
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.APPROVED);
+        booking2.setStatus(BookingStatus.APPROVED);
         booking2.setStartDate(LocalDateTime.of(2020, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking2.setBooker(user);
@@ -297,14 +297,14 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2020, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2023, 2, 20, 2, 1, 1));
         booking.setBooker(user);
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.APPROVED);
+        booking2.setStatus(BookingStatus.APPROVED);
         booking2.setStartDate(LocalDateTime.of(2020, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking2.setBooker(user);
@@ -368,7 +368,7 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -385,7 +385,7 @@ public class BookingServiceTest {
 
         Booking updatedBooking = bookingService.updateStatus(user.getId(), booking.getId(), false);
 
-        assertEquals(Status.REJECTED.toString(), updatedBooking.getStatus().toString());
+        assertEquals(BookingStatus.REJECTED.toString(), updatedBooking.getStatus().toString());
         assertEquals(booking.getId(), updatedBooking.getId());
         assertEquals(booking.getStartDate().toString(), updatedBooking.getStartDate().toString());
         assertEquals(booking.getEndDate().toString(), updatedBooking.getEndDate().toString());
@@ -409,7 +409,7 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -426,7 +426,7 @@ public class BookingServiceTest {
 
         Booking updatedBooking = bookingService.updateStatus(user.getId(), booking.getId(), true);
 
-        assertEquals(Status.APPROVED.toString(), updatedBooking.getStatus().toString());
+        assertEquals(BookingStatus.APPROVED.toString(), updatedBooking.getStatus().toString());
         assertEquals(booking.getId(), updatedBooking.getId());
         assertEquals(booking.getStartDate().toString(), updatedBooking.getStartDate().toString());
         assertEquals(booking.getEndDate().toString(), updatedBooking.getEndDate().toString());
@@ -462,7 +462,7 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -496,7 +496,7 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -519,13 +519,13 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2024, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.APPROVED);
+        booking2.setStatus(BookingStatus.APPROVED);
         booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
 
@@ -540,13 +540,13 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStartDate(LocalDateTime.of(2024, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.APPROVED);
+        booking2.setStatus(BookingStatus.APPROVED);
         booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
 
@@ -561,13 +561,13 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStartDate(LocalDateTime.of(2024, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.REJECTED);
+        booking2.setStatus(BookingStatus.REJECTED);
         booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
 
@@ -582,13 +582,13 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStartDate(LocalDateTime.of(2022, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2023, 2, 20, 2, 1, 1));
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.REJECTED);
+        booking2.setStatus(BookingStatus.REJECTED);
         booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
 
@@ -603,13 +603,13 @@ public class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStartDate(LocalDateTime.of(2022, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2023, 2, 20, 2, 1, 1));
 
         Booking booking2 = new Booking();
         booking2.setId(2);
-        booking2.setStatus(Status.REJECTED);
+        booking2.setStatus(BookingStatus.REJECTED);
         booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
 

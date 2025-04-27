@@ -1,5 +1,7 @@
 package com.practice.shareitserver.item;
 
+import com.practice.shareitserver.booking.Booking;
+import com.practice.shareitserver.booking.BookingReadDto;
 import com.practice.shareitserver.comment.CommentReadDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +22,8 @@ public class ItemDto {
     String description;
     @NotNull(message = "Статус наличия не указан")
     Boolean available;
-    final List<CommentReadDto> comments = new ArrayList<>();
+    List<CommentReadDto> comments = new ArrayList<>();
     Integer requestId;
+    BookingReadDto lastBooking;
+    BookingReadDto nextBooking;
 }

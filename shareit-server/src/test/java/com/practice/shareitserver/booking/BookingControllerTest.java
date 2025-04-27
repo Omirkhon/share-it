@@ -50,7 +50,7 @@ public class BookingControllerTest {
 
         Booking booking = new Booking();
         booking.setId(1000);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -91,7 +91,7 @@ public class BookingControllerTest {
 
         Booking booking = new Booking();
         booking.setId(1000);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2024, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2025, 2, 20, 2, 1, 1));
         booking.setBooker(user);
@@ -128,7 +128,7 @@ public class BookingControllerTest {
 
         Booking booking = new Booking();
         booking.setId(1000);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -136,7 +136,7 @@ public class BookingControllerTest {
 
         Booking booking2 = new Booking();
         booking2.setId(1001);
-        booking2.setStatus(Status.APPROVED);
+        booking2.setStatus(BookingStatus.APPROVED);
         booking2.setStartDate(LocalDateTime.of(2025, 12, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 24, 2, 1, 1));
         booking2.setItem(item2);
@@ -179,7 +179,7 @@ public class BookingControllerTest {
 
         Booking booking = new Booking();
         booking.setId(1000);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);
@@ -187,7 +187,7 @@ public class BookingControllerTest {
 
         Booking booking2 = new Booking();
         booking2.setId(1001);
-        booking2.setStatus(Status.APPROVED);
+        booking2.setStatus(BookingStatus.APPROVED);
         booking2.setStartDate(LocalDateTime.of(2025, 12, 20, 2, 1, 1));
         booking2.setEndDate(LocalDateTime.of(2026, 2, 24, 2, 1, 1));
         booking2.setItem(item2);
@@ -224,7 +224,7 @@ public class BookingControllerTest {
 
         Booking booking = new Booking();
         booking.setId(1000);
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
         booking.setItem(item);

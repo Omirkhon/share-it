@@ -36,4 +36,8 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "request_id")
     Request request;
+    @Transient
+    Booking lastBooking;
+    @Transient
+    Booking nextBooking;
 }

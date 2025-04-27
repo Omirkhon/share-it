@@ -2,7 +2,7 @@ package com.practice.shareitserver.item;
 
 import com.practice.shareitserver.booking.Booking;
 import com.practice.shareitserver.booking.BookingRepository;
-import com.practice.shareitserver.booking.Status;
+import com.practice.shareitserver.booking.BookingStatus;
 import com.practice.shareitserver.comment.Comment;
 import com.practice.shareitserver.comment.CommentCreateDto;
 import com.practice.shareitserver.comment.CommentRepository;
@@ -61,15 +61,26 @@ public class ItemService {
         return itemRepository.save(oldItem);
     }
 
-    public Item findById(int itemId) {
-        return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена."));
+    public Item findById(int userId, int itemId) {
+        Item item =  itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена."));
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        if (item.getOwner().getId() == userId) {
+            item.setLastBooking(bookingRepository.findFirstByItemIdAndStartDateIsBeforeOrderByEndDateDesc(item.getId(), LocalDateTime.now()).orElse(null));
+            item.setNextBooking(bookingRepository.findFirstByItemIdAndStartDateIsAfterOrderByStartDate(item.getId(), LocalDateTime.now()).orElse(null));
+        }
+        return item;
     }
 
     public List<Item> findAllOwnItems(int userId, int from, int size) {
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Pageable pageable = PageRequest.of(from/size, size);
         Page<Item> pageResult = itemRepository.findAllByOwner(owner, pageable);
-        return pageResult.getContent();
+        List<Item> items =  pageResult.getContent();
+        for (Item item : items) {
+            item.setLastBooking(bookingRepository.findFirstByItemIdAndStartDateIsBeforeOrderByEndDateDesc(item.getId(), LocalDateTime.now()).orElse(null));
+            item.setNextBooking(bookingRepository.findFirstByItemIdAndStartDateIsAfterOrderByStartDate(item.getId(), LocalDateTime.now()).orElse(null));
+        }
+        return items;
     }
 
     public List<Item> findByText(String text, int from, int size) {
@@ -78,7 +89,12 @@ public class ItemService {
         }
         Pageable pageable = PageRequest.of(from/size, size);
         Page<Item> pageResult = itemRepository.search(text, pageable);
-        return pageResult.getContent();
+        List<Item> items =  pageResult.getContent();
+        for (Item item : items) {
+            item.setLastBooking(bookingRepository.findFirstByItemIdAndStartDateIsBeforeOrderByEndDateDesc(item.getId(), LocalDateTime.now()).orElse(null));
+            item.setNextBooking(bookingRepository.findFirstByItemIdAndStartDateIsAfterOrderByStartDate(item.getId(), LocalDateTime.now()).orElse(null));
+        }
+        return items;
     }
 
     public Comment createComment(int userId, int itemId, CommentCreateDto commentCreateDto) {
@@ -90,7 +106,7 @@ public class ItemService {
                 .findFirst()
                 .orElseThrow(()-> new ValidationException("Вы не брали данную вещь в аренду"));
 
-        if (!booking.getStatus().equals(Status.APPROVED) || !booking.getStartDate().isBefore(LocalDateTime.now())) {
+        if (!booking.getStatus().equals(BookingStatus.APPROVED) || !booking.getStartDate().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Вы не брали данную вещь в аренду.");
         }
 

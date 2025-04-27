@@ -15,7 +15,8 @@ public class BookingReadDto {
     int id;
     LocalDateTime start;
     LocalDateTime end;
-    Status status;
+    BookingStatus status;
     UserDto booker;
+    int bookerId;
     ItemDto item;
 }

@@ -1,7 +1,10 @@
 package com.practice.shareitserver.booking;
 
-public enum Status {
+public enum BookingState {
+    ALL,
+    CURRENT,
+    PAST,
+    FUTURE,
     WAITING,
-    APPROVED,
     REJECTED
 }
