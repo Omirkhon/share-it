@@ -186,6 +186,9 @@ public class RequestServiceTest {
         request2.setCreated(LocalDateTime.now());
         request2.setRequester(user);
 
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
         when(requestRepository.findAllByRequesterId(Mockito.anyInt()))
                 .thenReturn(List.of(request, request2));
 

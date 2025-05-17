@@ -68,16 +68,22 @@ public class ItemControllerTest {
     @Test
     @SneakyThrows
     void findById_epicSuccess() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Имя");
+        user.setEmail("email@gmail.com");
+
         Item item = new Item();
         item.setId(1);
         item.setName("Предмет");
         item.setAvailable(true);
         item.setDescription("Описание");
 
-        when(itemService.findById(Mockito.anyInt()))
+        when(itemService.findById(Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(item);
 
-        mockMvc.perform(get("/items/" + item.getId()))
+        mockMvc.perform(get("/items/" + item.getId())
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Предмет"))

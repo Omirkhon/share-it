@@ -97,10 +97,11 @@ public class BookingControllerTest {
         booking.setBooker(user);
         booking.setItem(item);
 
-        when(bookingService.findById(Mockito.anyInt()))
+        when(bookingService.findById(Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(booking);
 
-        mockMvc.perform(get("/bookings/" + booking.getId()))
+        mockMvc.perform(get("/bookings/" + booking.getId())
+                        .header(RequestConstants.USER_ID_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(booking.getId()))
                 .andExpect(jsonPath("$.status").exists());

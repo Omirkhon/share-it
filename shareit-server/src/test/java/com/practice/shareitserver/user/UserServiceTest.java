@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -46,10 +46,12 @@ public class UserServiceTest {
         String message = "Пользователь с такой эл. почтой уже существует";
 
         User user = new User();
+        user.setId(1);
         user.setName("Бабуин");
         user.setEmail("monkey@gmail.com");
 
         User user2 = new User();
+        user2.setId(2);
         user2.setName("Горилла");
         user2.setEmail("monkey@gmail.com");
 
@@ -165,6 +167,9 @@ public class UserServiceTest {
         when(userRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(user));
 
+        when(userRepository.findUserByEmail(Mockito.anyString()))
+                .thenReturn(null);
+
         User result = userService.update(userMapper.toDto(updatedUser), user.getId());
 
         assertEquals(updatedUser.getEmail(), result.getEmail());
@@ -189,10 +194,12 @@ public class UserServiceTest {
         String message = "Пользователь с такой эл. почтой уже существует";
 
         User user = new User();
+        user.setId(1);
         user.setName("Бабуин");
         user.setEmail("monkey@gmail.com");
 
         User user2 = new User();
+        user2.setId(2);
         user2.setName("Горилла");
         user2.setEmail("gorilla@gmail.com");
 
@@ -210,18 +217,21 @@ public class UserServiceTest {
         assertEquals(message, exception.getMessage());
     }
 
-//    @Test
-//    void delete() {
-//        User user = new User();
-//        user.setId(1000);
-//        user.setName("Бабуин");
-//        user.setEmail("monkey@gmail.com");
-//
-//        when(userRepository.deleteUserById(Mockito.anyInt()))
-//                .thenReturn(user);
-//
-//        User deletedUser = userService.delete(user.getId());
-//
-//        assertEquals(1000, deletedUser.getId());
-//    }
+    @Test
+    void delete() {
+        String message = "Пользователь не найден";
+        User user = new User();
+        user.setId(1000);
+        user.setName("Бабуин");
+        user.setEmail("monkey@gmail.com");
+
+        userService.delete(user.getId());
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> userService.findById(1000));
+
+        assertEquals(message, exception.getMessage());
+    }
 }

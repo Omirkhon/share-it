@@ -111,7 +111,10 @@
                 <configuration>
                     <output>file</output>
                     <excludes>
-                        <!--                        <exclude>**/SpringApplication.class</exclude>-->
+                        <exclude>**/ShareItApplication.class</exclude>
+                        <exclude>**/ErrorHandler.class</exclude>
+                        <exclude>**/ItemMapper.class</exclude>
+                        <exclude>**/BookingState.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

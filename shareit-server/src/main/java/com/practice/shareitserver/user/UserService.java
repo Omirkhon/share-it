@@ -15,6 +15,9 @@ public class UserService {
     public User create(UserDto userDto) {
         User user = new User();
         user.setName(userDto.getName());
+        if (userRepository.findUserByEmail(userDto.getEmail()) != null) {
+            throw new ConflictException("Пользователь с такой эл. почтой уже существует");
+        }
         user.setEmail(userDto.getEmail());
         return userRepository.save(user);
     }

@@ -115,31 +115,4 @@ public class BookingService {
                 return bookingRepository.findAllByItemOwnerOrderByStartDateDesc(user, pageable).getContent();
         }
     }
-
-    public List<Booking> filterBookings(List<Booking> bookings, String state) {
-        List<Booking> filteredBookings = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-
-        switch (state) {
-            case "PAST" -> bookings.stream()
-                    .filter(booking -> booking.getEndDate().isBefore(now))
-                    .forEach(filteredBookings::add);
-            case "CURRENT" -> bookings.stream()
-                    .filter(booking -> booking.getStartDate().isBefore(now) && booking.getEndDate().isAfter(now))
-                    .forEach(filteredBookings::add);
-            case "FUTURE" -> bookings.stream()
-                    .filter(booking -> booking.getStartDate().isAfter(now))
-                    .forEach(filteredBookings::add);
-            case "WAITING" -> bookings.stream()
-                    .filter(booking -> booking.getStatus() == BookingStatus.WAITING)
-                    .forEach(filteredBookings::add);
-            case "REJECTED" -> bookings.stream()
-                    .filter(booking -> booking.getStatus() == BookingStatus.REJECTED)
-                    .forEach(filteredBookings::add);
-            default -> {
-                return bookings;
-            }
-        }
-        return filteredBookings;
-    }
 }

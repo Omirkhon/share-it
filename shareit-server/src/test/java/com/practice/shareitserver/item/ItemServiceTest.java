@@ -133,11 +133,6 @@ public class ItemServiceTest {
 
     @Test
     void create_epicFail_notFoundRequest() {
-        User user = new User();
-        user.setId(1);
-        user.setName("Орангутан");
-        user.setEmail("orangutan@gmail.com");
-
         String message = "Запрос не найден";
 
         ItemCreateDto itemCreateDto = new ItemCreateDto();
@@ -146,13 +141,10 @@ public class ItemServiceTest {
         itemCreateDto.setDescription("Описание");
         itemCreateDto.setRequestId(10);
 
-        when(userRepository.findById(Mockito.anyInt()))
-                .thenReturn(Optional.of(user));
-
         when(requestRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.empty());
 
-        NotFoundException e = assertThrows(NotFoundException.class, () -> itemService.create(user.getId(), itemCreateDto));
+        NotFoundException e = assertThrows(NotFoundException.class, () -> itemService.create(1, itemCreateDto));
 
         assertEquals(message, e.getMessage());
     }
@@ -358,16 +350,71 @@ public class ItemServiceTest {
 
     @Test
     void findById_epicSuccess() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user@gmail.com");
+
         Item item = new Item();
         item.setId(9);
         item.setName("Вещь");
         item.setAvailable(true);
         item.setDescription("Описание вещи");
+        item.setOwner(user);
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setItem(item);
+        booking.setStartDate(LocalDateTime.of(2000, 10, 15, 10, 10, 0));
+        booking.setStartDate(LocalDateTime.of(2001, 10, 15, 10, 10, 0));
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setItem(item);
+        booking.setStartDate(LocalDateTime.of(2026, 10, 15, 10, 10, 0));
+        booking.setStartDate(LocalDateTime.of(2027, 10, 15, 10, 10, 0));
+
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
 
         when(itemRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(item));
 
-        Item foundItem = itemService.findById(item.getId());
+        when(bookingRepository.findFirstByItemIdAndStartDateIsBeforeOrderByEndDateDesc(Mockito.anyInt(), Mockito.any()))
+                .thenReturn(Optional.of(booking));
+
+        when(bookingRepository.findFirstByItemIdAndStartDateIsAfterOrderByStartDate(Mockito.anyInt(), Mockito.any()))
+                .thenReturn(Optional.of(booking2));
+
+        Item foundItem = itemService.findById(user.getId(), item.getId());
+        assertEquals(item.getId(), foundItem.getId());
+    }
+
+    @Test
+    void findById_epicSuccess_OwnerIsNotUser() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user@gmail.com");
+
+        User user2 = new User();
+        user2.setId(2);
+
+        Item item = new Item();
+        item.setId(9);
+        item.setName("Вещь");
+        item.setAvailable(true);
+        item.setDescription("Описание вещи");
+        item.setOwner(user2);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(itemRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(item));
+
+        Item foundItem = itemService.findById(user.getId(), item.getId());
         assertEquals(item.getId(), foundItem.getId());
     }
 
@@ -378,7 +425,27 @@ public class ItemServiceTest {
         when(itemRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.empty());
 
-        NotFoundException e = assertThrows(NotFoundException.class, () -> itemService.findById(9));
+        NotFoundException e = assertThrows(NotFoundException.class, () -> itemService.findById(1, 9));
+        assertEquals(message, e.getMessage());
+    }
+
+    @Test
+    void findById_epicFail_UserNotFound() {
+        String message = "Пользователь не найден";
+
+        Item item = new Item();
+        item.setId(9);
+        item.setName("Вещь");
+        item.setAvailable(true);
+        item.setDescription("Описание вещи");
+
+        when(itemRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(item));
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> itemService.findById(1, 9));
         assertEquals(message, e.getMessage());
     }
 

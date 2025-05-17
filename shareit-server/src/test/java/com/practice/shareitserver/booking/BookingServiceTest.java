@@ -40,11 +40,17 @@ public class BookingServiceTest {
         user.setName("Пользователь");
         user.setEmail("user200@gmail.com");
 
+        User owner = new User();
+        owner.setId(2);
+        owner.setName("Пользователь");
+        owner.setEmail("user200@gmail.com");
+
         Item item = new Item();
         item.setId(1);
         item.setDescription("Вещь");
         item.setAvailable(true);
         item.setName("Вещь");
+        item.setOwner(owner);
 
         Booking booking = new Booking();
         booking.setStatus(BookingStatus.APPROVED);
@@ -73,6 +79,45 @@ public class BookingServiceTest {
         assertEquals(item.getId(), savedBooking.getItem().getId());
         assertEquals(booking.getStartDate().toString(), savedBooking.getStartDate().toString());
         assertEquals(booking.getEndDate().toString(), savedBooking.getEndDate().toString());
+    }
+
+    @Test
+    void create_epicFail_bookingOwnItem() {
+        String message = "Вы не можете запрашивать собственную вещь";
+
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Item item = new Item();
+        item.setId(1);
+        item.setDescription("Вещь");
+        item.setAvailable(true);
+        item.setName("Вещь");
+        item.setOwner(user);
+
+        Booking booking = new Booking();
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setItem(item);
+        booking.setBooker(user);
+
+        BookingCreateDto bookingCreateDto = new BookingCreateDto();
+        bookingCreateDto.setStart(booking.getStartDate());
+        bookingCreateDto.setEnd(booking.getEndDate());
+        bookingCreateDto.setItemId(item.getId());
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(itemRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(item));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> bookingService.create(user.getId(), bookingCreateDto));
+
+        assertEquals(message, exception.getMessage());
     }
 
     @Test
@@ -184,16 +229,50 @@ public class BookingServiceTest {
 
     @Test
     void findById_epicSuccess() {
+        User user = new User();
+        user.setId(1);
+
         Booking booking = new Booking();
         booking.setId(1);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
         booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
 
         when(bookingRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(booking));
 
-        Booking foundBooking = bookingService.findById(booking.getId());
+        Booking foundBooking = bookingService.findById(user.getId(), booking.getId());
+
+        assertEquals(booking.getStatus().toString(), foundBooking.getStatus().toString());
+        assertEquals(booking.getStartDate().toString(), foundBooking.getStartDate().toString());
+        assertEquals(booking.getEndDate().toString(), foundBooking.getEndDate().toString());
+    }
+
+    @Test
+    void findById_epicSuccess2() {
+        User user = new User();
+        user.setId(1);
+
+        User user2 = new User();
+        user2.setId(2);
+
+        Item item = new Item();
+        item.setId(1);
+        item.setOwner(user);
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user2);
+        booking.setItem(item);
+
+        when(bookingRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(booking));
+
+        Booking foundBooking = bookingService.findById(user.getId(), booking.getId());
 
         assertEquals(booking.getStatus().toString(), foundBooking.getStatus().toString());
         assertEquals(booking.getStartDate().toString(), foundBooking.getStartDate().toString());
@@ -207,13 +286,168 @@ public class BookingServiceTest {
         when(bookingRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> bookingService.findById(1));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> bookingService.findById(1, 1));
 
         assertEquals(message, exception.getMessage());
     }
 
     @Test
-    void findAllByCurrentUser_epicSuccess() {
+    void findById_epicFail_bookingNotFound() {
+        String message = "У вас такой брони не найдено";
+
+        User user = new User();
+        user.setId(1);
+
+        Item item = new Item();
+        item.setId(1);
+        item.setOwner(user);
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+        booking.setItem(item);
+
+        when(bookingRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(booking));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> bookingService.findById(2, 1));
+
+        assertEquals(message, exception.getMessage());
+    }
+
+    @Test
+    void findAllByCurrentUser_epicSuccessWithStateALL() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.REJECTED);
+        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findAllByBookerOrderByStartDateDesc(Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
+
+        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), "ALL", 0, 5);
+
+        assertEquals(List.of(booking, booking2), bookings);
+    }
+
+    @Test
+    void findAllByCurrentUser_epicSuccessWithStateWAITING() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.WAITING);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.WAITING);
+        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findByBookerAndStatusOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
+
+        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), "WAITING", 0, 5);
+
+        assertEquals(List.of(booking, booking2), bookings);
+    }
+
+    @Test
+    void findAllByCurrentUser_epicSuccessWithStateREJECTED() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.REJECTED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.WAITING);
+        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findByBookerAndStatusOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking)));
+
+        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), "REJECTED", 0, 5);
+
+        assertEquals(List.of(booking), bookings);
+    }
+
+    @Test
+    void findAllByCurrentUser_epicSuccessWithStatePAST() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2023, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2024, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.APPROVED);
+        booking2.setStartDate(LocalDateTime.of(2022, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2022, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findByBookerAndStatusAndEndDateIsBeforeOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
+
+        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), "PAST", 0, 5);
+
+        assertEquals(List.of(booking, booking2), bookings);
+    }
+
+    @Test
+    void findAllByCurrentUser_epicSuccessWithStateCURRENT() {
         User user = new User();
         user.setId(1);
         user.setName("Пользователь");
@@ -236,16 +470,16 @@ public class BookingServiceTest {
         when(userRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(user));
 
-        when(bookingRepository.findAllByBooker(Mockito.any(), Mockito.any()))
+        when(bookingRepository.findByBookerAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(new PageImpl<>(List.of(booking, booking2)));
 
-        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), null, 0, 5);
+        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), "CURRENT", 0, 5);
 
         assertEquals(List.of(booking, booking2), bookings);
     }
 
     @Test
-    void findAllByCurrentUser_withState_epicSuccess() {
+    void findAllByCurrentUser_epicSuccessWithStateFUTURE() {
         User user = new User();
         user.setId(1);
         user.setName("Пользователь");
@@ -254,26 +488,26 @@ public class BookingServiceTest {
         Booking booking = new Booking();
         booking.setId(1);
         booking.setStatus(BookingStatus.APPROVED);
-        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
-        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setStartDate(LocalDateTime.of(2026, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
         booking.setBooker(user);
 
         Booking booking2 = new Booking();
         booking2.setId(2);
         booking2.setStatus(BookingStatus.APPROVED);
-        booking2.setStartDate(LocalDateTime.of(2020, 10, 20, 2, 1, 1));
-        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking2.setStartDate(LocalDateTime.of(2026, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
         booking2.setBooker(user);
 
         when(userRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(user));
 
-        when(bookingRepository.findAllByBooker(Mockito.any(), Mockito.any()))
-                .thenReturn(new PageImpl<>(List.of(booking2)));
+        when(bookingRepository.findByBookerAndStartDateIsAfterOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
 
-        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), "CURRENT", 0, 5);
+        List<Booking> bookings = bookingService.findAllByCurrentUser(user.getId(), "FUTURE", 0, 5);
 
-        assertEquals(List.of(booking2), bookings);
+        assertEquals(List.of(booking, booking2), bookings);
     }
 
     @Test
@@ -289,7 +523,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void findAllByOwner_epicSuccess() {
+    void findAllByOwner_epicSuccess_statePAST() {
         User user = new User();
         user.setId(1);
         user.setName("Пользователь");
@@ -312,12 +546,172 @@ public class BookingServiceTest {
         when(userRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(user));
 
-        when(bookingRepository.findAllByItemOwner(Mockito.any(), Mockito.any()))
+        when(bookingRepository.findByItemOwnerAndStatusAndEndDateIsBeforeOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
         List<Booking> bookings = bookingService.findAllByOwner(user.getId(), "PAST", 0, 5);
 
         assertEquals(List.of(booking), bookings);
+    }
+
+    @Test
+    void findAllByOwner_epicSuccess_stateCURRENT() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2020, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2023, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.APPROVED);
+        booking2.setStartDate(LocalDateTime.of(2020, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findByItemOwnerAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking2)));
+
+        List<Booking> bookings = bookingService.findAllByOwner(user.getId(), "CURRENT", 0, 5);
+
+        assertEquals(List.of(booking2), bookings);
+    }
+
+    @Test
+    void findAllByOwner_epicSuccess_stateFUTURE() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.APPROVED);
+        booking2.setStartDate(LocalDateTime.of(2026, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findByItemOwnerAndStartDateIsAfterOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
+
+        List<Booking> bookings = bookingService.findAllByOwner(user.getId(), "FUTURE", 0, 5);
+
+        assertEquals(List.of(booking, booking2), bookings);
+    }
+
+    @Test
+    void findAllByOwner_epicSuccess_stateWAITING() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.WAITING);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.WAITING);
+        booking2.setStartDate(LocalDateTime.of(2026, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findByItemOwnerAndStatusOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
+
+        List<Booking> bookings = bookingService.findAllByOwner(user.getId(), "WAITING", 0, 5);
+
+        assertEquals(List.of(booking, booking2), bookings);
+    }
+
+    @Test
+    void findAllByOwner_epicSuccess_stateREJECTED() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.REJECTED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.REJECTED);
+        booking2.setStartDate(LocalDateTime.of(2026, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findByItemOwnerAndStatusOrderByStartDateDesc(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
+
+        List<Booking> bookings = bookingService.findAllByOwner(user.getId(), "REJECTED", 0, 5);
+
+        assertEquals(List.of(booking, booking2), bookings);
+    }
+
+    @Test
+    void findAllByOwner_epicSuccess_stateALL() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.REJECTED);
+        booking.setStartDate(LocalDateTime.of(2022, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2024, 2, 20, 2, 1, 1));
+        booking.setBooker(user);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2);
+        booking2.setStatus(BookingStatus.APPROVED);
+        booking2.setStartDate(LocalDateTime.of(2026, 10, 20, 2, 1, 1));
+        booking2.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
+        booking2.setBooker(user);
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        when(bookingRepository.findAllByItemOwnerOrderByStartDateDesc(Mockito.any(), Mockito.any()))
+                .thenReturn(new PageImpl<>(List.of(booking, booking2)));
+
+        List<Booking> bookings = bookingService.findAllByOwner(user.getId(), "ALL", 0, 5);
+
+        assertEquals(List.of(booking, booking2), bookings);
     }
 
     @Test
@@ -332,25 +726,6 @@ public class BookingServiceTest {
         assertEquals(message, exception.getMessage());
     }
 
-    @Test
-    void findAllByOwner_epicFail_noBookings() {
-        String message = "У данного пользователя нет бронирований.";
-
-        User user = new User();
-        user.setId(1);
-        user.setName("Пользователь");
-        user.setEmail("user200@gmail.com");
-
-        when(userRepository.findById(Mockito.anyInt()))
-                .thenReturn(Optional.of(user));
-
-        when(bookingRepository.findAllByItemOwner(Mockito.any(), Mockito.any()))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> bookingService.findAllByOwner(1, null, 0, 5));
-
-        assertEquals(message, exception.getMessage());
-    }
 
     @Test
     void updateStatusToRejected_epicSuccess() {
@@ -435,6 +810,41 @@ public class BookingServiceTest {
     }
 
     @Test
+    void updateStatus_epicFail_alreadyApproved() {
+        String message = "Бронь уже подтверждена";
+
+        User user = new User();
+        user.setId(1);
+        user.setName("Пользователь");
+        user.setEmail("user200@gmail.com");
+
+        Item item = new Item();
+        item.setId(1);
+        item.setDescription("Вещь");
+        item.setAvailable(true);
+        item.setName("Вещь");
+        item.setOwner(user);
+
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
+        booking.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
+        booking.setItem(item);
+        booking.setBooker(user);
+
+        when(bookingRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(booking));
+
+        when(userRepository.findById(Mockito.anyInt()))
+                .thenReturn(Optional.of(user));
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> bookingService.updateStatus(user.getId(), booking.getId(), true));
+
+        assertEquals(message, exception.getMessage());
+    }
+
+    @Test
     void updateStatus_epicFail_bookingNotFound() {
         String message = "Бронь не найдена.";
 
@@ -473,7 +883,7 @@ public class BookingServiceTest {
         when(bookingRepository.findById(Mockito.anyInt()))
                 .thenReturn(Optional.of(booking));
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> bookingService.updateStatus(2, booking.getId(), true));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> bookingService.updateStatus(2, booking.getId(), true));
 
         assertEquals(message, exception.getMessage());
     }
@@ -511,110 +921,5 @@ public class BookingServiceTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () -> bookingService.updateStatus(1, 1, true));
 
         assertEquals(message, exception.getMessage());
-    }
-
-    @Test
-    void filterBookings_caseFuture() {
-        String state = "FUTURE";
-
-        Booking booking = new Booking();
-        booking.setId(1);
-        booking.setStatus(BookingStatus.APPROVED);
-        booking.setStartDate(LocalDateTime.of(2024, 10, 20, 2, 1, 1));
-        booking.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
-
-        Booking booking2 = new Booking();
-        booking2.setId(2);
-        booking2.setStatus(BookingStatus.APPROVED);
-        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
-        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
-
-        List<Booking> bookings = bookingService.filterBookings(List.of(booking, booking2), state);
-
-        assertEquals(List.of(booking2), bookings);
-    }
-
-    @Test
-    void filterBookings_caseWaiting() {
-        String state = "WAITING";
-
-        Booking booking = new Booking();
-        booking.setId(1);
-        booking.setStatus(BookingStatus.WAITING);
-        booking.setStartDate(LocalDateTime.of(2024, 10, 20, 2, 1, 1));
-        booking.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
-
-        Booking booking2 = new Booking();
-        booking2.setId(2);
-        booking2.setStatus(BookingStatus.APPROVED);
-        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
-        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
-
-        List<Booking> bookings = bookingService.filterBookings(List.of(booking, booking2), state);
-
-        assertEquals(List.of(booking), bookings);
-    }
-
-    @Test
-    void filterBookings_caseRejected() {
-        String state = "REJECTED";
-
-        Booking booking = new Booking();
-        booking.setId(1);
-        booking.setStatus(BookingStatus.WAITING);
-        booking.setStartDate(LocalDateTime.of(2024, 10, 20, 2, 1, 1));
-        booking.setEndDate(LocalDateTime.of(2027, 2, 20, 2, 1, 1));
-
-        Booking booking2 = new Booking();
-        booking2.setId(2);
-        booking2.setStatus(BookingStatus.REJECTED);
-        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
-        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
-
-        List<Booking> bookings = bookingService.filterBookings(List.of(booking, booking2), state);
-
-        assertEquals(List.of(booking2), bookings);
-    }
-
-    @Test
-    void filterBookings_caseCurrent_timeIsWrong() {
-        String state = "CURRENT";
-
-        Booking booking = new Booking();
-        booking.setId(1);
-        booking.setStatus(BookingStatus.WAITING);
-        booking.setStartDate(LocalDateTime.of(2022, 10, 20, 2, 1, 1));
-        booking.setEndDate(LocalDateTime.of(2023, 2, 20, 2, 1, 1));
-
-        Booking booking2 = new Booking();
-        booking2.setId(2);
-        booking2.setStatus(BookingStatus.REJECTED);
-        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
-        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
-
-        List<Booking> bookings = bookingService.filterBookings(List.of(booking, booking2), state);
-
-        assertEquals(List.of(), bookings);
-    }
-
-    @Test
-    void filterBookings_wrongState() {
-        String state = "A";
-
-        Booking booking = new Booking();
-        booking.setId(1);
-        booking.setStatus(BookingStatus.WAITING);
-        booking.setStartDate(LocalDateTime.of(2022, 10, 20, 2, 1, 1));
-        booking.setEndDate(LocalDateTime.of(2023, 2, 20, 2, 1, 1));
-
-        Booking booking2 = new Booking();
-        booking2.setId(2);
-        booking2.setStatus(BookingStatus.REJECTED);
-        booking2.setStartDate(LocalDateTime.of(2025, 10, 20, 2, 1, 1));
-        booking2.setEndDate(LocalDateTime.of(2026, 2, 20, 2, 1, 1));
-
-        List<Booking> bookings = bookingService.filterBookings(List.of(booking, booking2), state);
-
-        assertEquals(List.of(booking, booking2), bookings);
     }
 }
