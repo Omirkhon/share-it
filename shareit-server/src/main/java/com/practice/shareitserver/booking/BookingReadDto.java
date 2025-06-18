@@ -1,0 +1,22 @@
+package com.practice.shareitserver.booking;
+
+import com.practice.shareitserver.item.ItemDto;
+import com.practice.shareitserver.user.UserDto;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@Data
+public class BookingReadDto {
+    int id;
+    LocalDateTime start;
+    LocalDateTime end;
+    BookingStatus status;
+    UserDto booker;
+    int bookerId;
+    ItemDto item;
+}
